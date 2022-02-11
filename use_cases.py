@@ -1,4 +1,6 @@
 # load connection
+from ast import Is
+from socket import TIPC_DEST_DROPPABLE
 from turtle import begin_fill
 
 
@@ -9,19 +11,55 @@ table = Table(con, "table")
 table = grizzly.read_table("events")
 
 
+
+
+# Update specific rows
 def udf():
     if table.column > 10:
         table.column = 12
+udf()
 
 UPDATE table
 SET table.column = 12
-WHERE table.column > 12
+WHERE table.column > 10
 
 
 
+
+# delete rows
+def udf(a: str, column: Table.column):
+    if table.column == a:
+        table.drop_row()
+
+udf("hello", table.column)
+
+DELETE FROM table
+WHERE table.column = "hello"
+
+
+
+
+# Update specific rows with specific value
+def udf(a: int):
+    if table.column > 10:
+        table.column = a
+udf(5)
+
+
+UPDATE table
+SET table.column = 5
+WHERE table.column > 10
+
+
+
+
+
+# Print rows (columns) with rstrictions on row
 def udf():
     if table.column > 10:
         print(table.column)
+udf()
+
 
 SELECT table.column
 FROM table
@@ -35,6 +73,34 @@ BEGIN
 END;
 
 
+
+
 # Bei return auch SQL-Return, aber was? -> Liste, cursor, df
 
-def udf():
+# project udf to column
+def udf(a: int, b:int) -> int:
+    return a *b
+new_col = udf(table.column, 3)
+table.new_column = udf(table.column, 3)
+table["new column"] = table.column.map(udf(3))
+
+CREATE OR REPLACE FUNCTION udf(a IN number, b IN NUMBER)
+    RETURN NUMBER IS 
+BEGIN 
+RETRUN a * b;
+END;
+
+SELECT udf(table.column, 3)
+FROM table
+
+
+
+
+
+# Change data
+def udf(to_change: str, values: str):
+    table.to_change = values
+
+UPDATE table
+SET table.to_change = values
+
