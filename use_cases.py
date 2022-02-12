@@ -13,6 +13,7 @@ table = grizzly.read_table("events")
 
 
 
+
 # Update specific rows
 def udf():
     if table.column > 10:
@@ -26,18 +27,6 @@ WHERE table.column > 10
 
 
 
-# delete rows
-def udf(a: str, column: Table.column):
-    if table.column == a:
-        table.drop_row()
-
-udf("hello", table.column)
-
-DELETE FROM table
-WHERE table.column = "hello"
-
-
-
 
 # Update specific rows with specific value
 def udf(a: int):
@@ -45,10 +34,35 @@ def udf(a: int):
         table.column = a
 udf(5)
 
-
 UPDATE table
 SET table.column = 5
 WHERE table.column > 10
+
+
+
+
+
+# delete rows
+def udf(a: str):
+    if table.column == a:
+        table.drop_row()
+udf("hello")
+
+DELETE FROM table
+WHERE table.column = "hello"
+
+
+
+
+
+
+# Change data
+def udf(values: str):
+    table.column = values
+udf("hello")
+
+UPDATE table
+SET table.column = "hello"
 
 
 
@@ -59,7 +73,6 @@ def udf():
     if table.column > 10:
         print(table.column)
 udf()
-
 
 SELECT table.column
 FROM table
@@ -96,11 +109,26 @@ FROM table
 
 
 
-
-# Change data
-def udf(to_change: str, values: str):
-    table.to_change = values
+def udf():
+    for r in table:
+        if r.column3 == True:
+            m = r.column1 + (r.column2 * 30):
+        else:
+            m = r.column1 + (r.column2 * 10):
+        r.column = m
+        print(r.column)
 
 UPDATE table
-SET table.to_change = values
+SET table.column = CASE table.column3
+    WHEN table.column3 = True THEN table.column1 + (table.column2 * 30)
+    WHEN table.column3 = False THEN table.column1 + (table.column2 * 10)
 
+
+
+Eher so:
+
+i = 5
+i := 5
+
+for i in range()
+loop...
