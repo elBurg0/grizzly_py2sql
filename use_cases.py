@@ -1,5 +1,6 @@
 # load connection
 from ast import Is
+from asyncio import WriteTransport
 from socket import TIPC_DEST_DROPPABLE
 from turtle import begin_fill
 
@@ -125,10 +126,49 @@ SET table.column = CASE table.column3
 
 
 
+
+# Factorial:
+def udf(i):
+    f = 0
+    if i == 0:
+        f = 1
+    else:
+        f = i * udf(i - 1)
+    return f
+udf(5)
+
+CREATE OR REPLACE FUNCTION udf(i number)
+RETURN NUMBER
+IS
+    f number = 0;
+BEGIN
+    IF i = 0 THEN
+        f := 1;
+    ELSE
+        f := i * udf(i - 1);
+    END IF;
+RETURN f;
+END;
+
+BEGIN
+dbms_output.put_line(udf(30));
+END;
+
+
+
+
+
 Eher so:
 
 i = 5
 i := 5
 
-for i in range()
-loop...
+for i in range(1,10):
+FOR i IN 1 .. 10 loop
+END loop
+
+
+print()
+set serveroutput on
+dbms.put_line()
+
