@@ -158,7 +158,7 @@ END;
 
 
 
-Eher so:
+## Eher so:
 # Deklarationen:
 i: int = 5  # oder type checken
 i number := 5;
@@ -166,26 +166,23 @@ i number(5) := 5;
 i number(5) DEFAULT 5;
 i number(5) NOT NULL := 5;
 
-i
-
-i = 5
-i := 5
-
 
 # Operatoren
-=               gleich
-<>, ~=, !=, ^=  ungleich
-<               kleiner
->               größer
-<               kleiner oder gleich
->=              größer oder gleich
-IS NULL         hat den Pseudo-Wert NULL
-IS NOT NULL     hat nicht den Pseudo-Wert NULL
-LIKE            Zeichenkettenvergleich mit Platzhaltern 
-                '%' und '_'
-NOT LIKE        Umkehrung von LIKE
+=
+<>, ~=, !=, ^=
+< 
+> 
+<
+>=
+
+.empty()
+IS NULL
+IS NOT NULL
+
+LIKE '%' und '_'
+NOT LIKE
 BETWEEN         Kurzschreibweise für <= und >=
-IN              Mengenvergleich
+IN
 
 # IF-Anweisungen:
 if a == 5:
