@@ -159,15 +159,69 @@ END;
 
 
 Eher so:
+# Deklarationen:
+i: int = 5  # oder type checken
+i number := 5;
+i number(5) := 5;
+i number(5) DEFAULT 5;
+i number(5) NOT NULL := 5;
+
+i
 
 i = 5
 i := 5
 
+
+# Operatoren
+=               gleich
+<>, ~=, !=, ^=  ungleich
+<               kleiner
+>               größer
+<               kleiner oder gleich
+>=              größer oder gleich
+IS NULL         hat den Pseudo-Wert NULL
+IS NOT NULL     hat nicht den Pseudo-Wert NULL
+LIKE            Zeichenkettenvergleich mit Platzhaltern 
+                '%' und '_'
+NOT LIKE        Umkehrung von LIKE
+BETWEEN         Kurzschreibweise für <= und >=
+IN              Mengenvergleich
+
+# IF-Anweisungen:
+if a == 5:
+    ...
+elif a == 6:
+    ...
+else:
+    ...
+
+if a = 5 then
+    ...
+elsif a = 6 then
+    ...
+else
+    ...
+end if;
+
+
+# Schleifen:
 for i in range(1,10):
 FOR i IN 1 .. 10 loop
 END loop
 
+while x < 10:
+While X < 11 Loop
+End Loop;
 
+while True:
+    if x > 10:
+        break
+Loop
+EXIT WHEN x > 10;
+End Loop;
+
+
+# Ausgaben
 print()
 set serveroutput on
 dbms.put_line()

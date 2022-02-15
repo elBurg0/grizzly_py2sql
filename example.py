@@ -54,8 +54,11 @@ df = grizzly.read_table("events")  # load table
 #df = df[df.globaleventid == 467268277] # filter it
 #df["newid"] = df["globaleventid"].map(myfunc, "py") # apply myfunc
 
-df["newid"] = df["globaleventid"].map(myfunc, "sql") # apply myfunc
+df["newid"] = df["globaleventid"].map(myfunc, "py") # apply myfunc
 
 print("\n")
 print(df.generateQuery())
 #df.show()
+
+i: int = 5
+print(i)
