@@ -140,7 +140,7 @@ udf(5)
 CREATE OR REPLACE FUNCTION udf(i number)
 RETURN NUMBER
 IS
-    f number = 0;
+    f number := 0;
 BEGIN
     IF i = 0 THEN
         f := 1;
