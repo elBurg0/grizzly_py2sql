@@ -44,21 +44,59 @@ g = df.groupby(["theyear","actor1name"])
 a = g.agg(col="actor2name", aggType=AggregateType.COUNT)
 a.show(pretty=True)
 
-
-## Use of UDF
-def myfunc(a: int, b: str) -> str:
-      return a+"_grizzly"
-
-grizzly.use(RelationalExecutor(con, SQLGenerator("postgresql")))
-df = grizzly.read_table("events")  # load table
-#df = df[df.globaleventid == 467268277] # filter it
-#df["newid"] = df["globaleventid"].map(myfunc, "py") # apply myfunc
-
-df["newid"] = df["globaleventid"].map(myfunc, "py") # apply myfunc
-
+print("----------------------------------------")
 print("\n")
-print(df.generateQuery())
-#df.show()
 
-i: int = 5
-print(i)
+
+def myfunc2(a: str) -> str:
+      return a + "grizzly"
+
+
+import cx_Oracle
+
+connection = None
+try:
+      connection = cx_Oracle.connect(
+        user = "demopython",
+        password = "orcl_py123",
+        dsn = "localhost/orclpdb",
+        encoding="UTF-8")
+
+      # show the version of the Oracle Database
+      print(connection.version)
+
+      c = connection.cursor()
+
+      c.execute("""
+            SELECT *
+            FROM todoitem
+      """)
+
+      rows = c.fetchall()
+
+
+      # Now query the rows back
+      for row in c.execute('select description, done from todoitem'):
+            if (row[1]):
+                  print(row[0], "is done")
+            else:
+                  print(row[0], "is NOT done")
+
+      grizzly.use(RelationalExecutor(connection, SQLGenerator("postgresql")))
+      df = grizzly.read_table("todoitem")  # load table
+      #df = df[df.globaleventid == 467268277] # filter it
+
+      df = df[["id" , "description"]]
+      df["gefunctioned"] = df["description"].map(myfunc2, "sql") # apply myfunc
+
+      print("\n")
+
+      df.show(pretty=True)
+
+except cx_Oracle.Error as error:
+    print("Error -", error)
+finally:
+    # release the connection
+    if connection:
+        connection.close()
+
