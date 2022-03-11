@@ -86,8 +86,9 @@ try:
       df = grizzly.read_table("todoitem")  # load table
       #df = df[df.globaleventid == 467268277] # filter it
 
-      df = df[["id" , "description"]]
+      df = df[["id", "description"]]
       df["gefunctioned"] = df["description"].map(myfunc2, "sql") # apply myfunc
+
 
       print("\n")
 
