@@ -3,6 +3,8 @@ from grizzly.dataframes.frame import Limit, Ordering, UDF, ModelUDF, Table, Exte
 from grizzly.expression import ArithmExpr, ArithmeticOperation, BoolExpr, BooleanOperation, ComputedCol, Constant, ExpressionException, FuncCall, ColRef, LogicExpr, LogicOperation, SetExpr, SetOperation
 from grizzly.generator import GrizzlyGenerator
 
+from tinypython import py2sql_compiler
+
 from typing import List, Tuple
 from pathlib import Path
 import os
@@ -32,8 +34,7 @@ class Query:
       if isinstance(df,Table):
         proj = "*"
         if computedCols:
-          proj += ","+computedCols
-          
+          proj = computedCols
         return (preCode, f"SELECT {proj} FROM {df.table} {df.alias}")
         
 
@@ -294,11 +295,18 @@ class SQLGenerator:
     return resultLines
 
   @staticmethod
-  def _mapTypes(pythonType: str) -> str:
-    if pythonType == "str":
-      return "varchar(1024)"
-    # elif pythonType == "long":
-    #   return "bigint"
+  def _mapTypes(pythonType: str, lang: str) -> str:
+    if lang == "sql":
+      if pythonType == "str":
+        return "VARCHAR2"
+      elif pythonType =="int":
+        return "INTEGER"
+
+    elif lang == "py":  
+      if pythonType == "str":
+        return "varchar(1024)"
+      # elif pythonType == "long":
+      #   return "bigint"
     else: 
       return pythonType
 
@@ -466,8 +474,8 @@ class SQLGenerator:
 
   @staticmethod
   def _generateCreateFunc(udf: UDF, templates) -> str:
-    paramsStr = ",".join([f"{p.name} {SQLGenerator._mapTypes(p.type)}" for p in udf.params])
-    returnType = SQLGenerator._mapTypes(udf.returnType)
+    paramsStr = ",".join([f"{p.name} {SQLGenerator._mapTypes(p.type, udf.lang)}" for p in udf.params])
+    returnType = SQLGenerator._mapTypes(udf.returnType, udf.lang)
 
     if isinstance(udf, ModelUDF):
       lines = templates[udf.modelType.name + "_code"]
@@ -481,9 +489,13 @@ class SQLGenerator:
         lines = "".join(lines)
         template = templates["createfunction"]
       else:
-        lines = "To be replaced by compiled sql"
-        template = templates["createfunction_sql"]
 
+        lines = udf.lines[1:]
+        lines = SQLGenerator._unindent(lines)
+        lines = "".join(lines)
+        # TODO declare
+        lines = py2sql_compiler.main([1, lines])
+        template = templates["createfunction_sql"]
     
     code = template.replace("$$name$$", udf.name)\
       .replace("$$inparams$$",paramsStr)\
