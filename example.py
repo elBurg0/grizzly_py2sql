@@ -5,51 +5,13 @@ import sqlite3
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
 
-con = sqlite3.connect("grizzly.db")
+def myfunc2(a: int) -> str:
+      i: int = 12
+      f: float = 3
+      m: int = 3 + a
+      g: str = m + "_functioned"
 
-grizzly.use(RelationalExecutor(con))
-
-
-# Projection
-df = grizzly.read_table("events")
-
-df = df[df["globaleventid"] == 470747760] # filter
-df = df[["actor1name","actor2name"]]
-df.show(pretty=True)
-
-print("----------------------------------------")
-
-# Joins
-df1 = grizzly.read_table("t1")
-df2 = grizzly.read_table("t2")
-
-j  = df1.join(df2, on = (df1.actor1name == df2.actor2name) | (df1["actor1countrycode"] <= df2["actor2countrycode"]), how="left outer")
-#print(j.generate())
-#cnt = j.count()
-#print(f"join result contais {cnt} elments")
-
-#print("----------------------------------------")
-
-# Count
-df = grizzly.read_table("events")
-print(df.count("actor2name"))
-
-print("----------------------------------------")
-
-# Aggregation
-from grizzly.aggregates import AggregateType
-df = grizzly.read_table("events")
-g = df.groupby(["theyear","actor1name"])
-
-a = g.agg(col="actor2name", aggType=AggregateType.COUNT)
-a.show(pretty=True)
-
-print("----------------------------------------")
-print("\n")
-
-
-def myfunc2(a: int) -> int:
-      return 5
+      return g
 
 
 import cx_Oracle
@@ -61,15 +23,6 @@ try:
         password = "orcl_py123",
         dsn = "localhost/orclpdb",
         encoding="UTF-8")
-
-      c = connection.cursor()
-
-      c.execute("""
-            SELECT *
-            FROM todoitem
-      """)
-
-      rows = c.fetchall()
       
       grizzly.use(RelationalExecutor(connection, SQLGenerator("postgresql")))
       df = grizzly.read_table("todoitem")  # load table
@@ -78,8 +31,9 @@ try:
       df = df[["id", "description"]]
       df["gefunctioned"] = df["id"].map(myfunc2, "sql") # apply myfunc
 
-
-      print("\n")
+      print("----------------------------------------")
+      print(df.generateQuery())
+      print("----------------------------------------")
 
       df.show(pretty=True)
 
