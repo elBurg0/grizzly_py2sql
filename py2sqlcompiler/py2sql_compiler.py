@@ -24,21 +24,20 @@ def main(argv):
 
     visitor = Python3Visitor()
     visitor.visit(tree)
-    print(visitor.assignments)
 
-    output = " ".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
-    output += " ".join(str(line) for line in visitor.statements)
+    output = "\n".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
+    output += "\n" +  "\n".join(str(line) for line in visitor.statements)
 
     return output
 
 
 def map_type(input):
-    if type(input) == str:
-        return "INTEGER"
-    elif type(input) == int:
+    if input == "str":
+        return "VARCHAR2(30)"
+    elif input == "int":
         return "NUMBER"
-    else:
-        return "INTEGER"
+    elif input == "float":
+        return "FLOAT"
 
 
 if __name__ == '__main__':

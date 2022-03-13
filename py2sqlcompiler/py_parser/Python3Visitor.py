@@ -45,14 +45,9 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#assignment_stmt.
     def visitAssignment_stmt(self, ctx:Python3Parser.Assignment_stmtContext):
-        self.assignments.append([str(ctx.NAME()), py2sql_compiler.map_type(ctx.expr().NAME)])
-        # TODO rework
-        if ctx.expr().NUMBER():
-            self.statements.append(str(ctx.NAME()) + " := " + str(ctx.expr().NUMBER()) + ";")
-        else:
-           self.statements.append(str(ctx.NAME()) + " := " + str(ctx.expr().NAME()) + ";") 
-        #return self.visitChildren(ctx)
-
+        assignment = self.visitChildren(ctx)
+        self.statements.append(f"    {str(ctx.NAME())} := {assignment};")
+        self.assignments.append(["    " + str(str(ctx.NAME())), py2sql_compiler.map_type(str(ctx.types().getText()))])
 
     # Visit a parse tree produced by Python3Parser#flow_stmt.
     def visitFlow_stmt(self, ctx:Python3Parser.Flow_stmtContext):
@@ -71,13 +66,17 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#return_stmt.
     def visitReturn_stmt(self, ctx:Python3Parser.Return_stmtContext):
-        self.statements.append(f"RETURN {ctx.expr().getText()};")
+        #returns = ctx.expr().getText().replace('"',"'")
+        returns = self.visitChildren(ctx)
+        self.statements.append(f"    RETURN {returns};")
         #return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by Python3Parser#compound_stmt.
     def visitCompound_stmt(self, ctx:Python3Parser.Compound_stmtContext):
-        return self.visitChildren(ctx)
+        self.statements.append("BEGIN")
+        self.visitChildren(ctx)
+        self.statements.append("END;")
 
 
     # Visit a parse tree produced by Python3Parser#if_stmt.
@@ -133,7 +132,12 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#expr.
     def visitExpr(self, ctx:Python3Parser.ExprContext):
-        return ctx.getText()
+        if "+" in ctx.getText() and (ctx.expr()[0].STRING() or ctx.expr()[1].STRING()):
+            l = ctx.expr()[0].getText().replace('"', "'")
+            r = ctx.expr()[1].getText().replace('"', "'")
+            return (f"CONCAT ({l}, {r})")
+        else:
+            return str(ctx.getText().replace('"', "'"))
 
 
 

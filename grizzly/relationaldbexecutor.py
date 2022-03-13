@@ -160,9 +160,7 @@ class RelationalExecutor(object):
 
     (pre,sql) = self.queryGenerator.generate(df)
     for pq in pre:
-      print(pq)
       self._execute(pq).close()
-    print(sql)
     return self._execute(sql)
 
   def _execAgg(self, df, f):

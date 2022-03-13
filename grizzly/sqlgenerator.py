@@ -498,6 +498,8 @@ class SQLGenerator:
         template = templates["createfunction_sql"]
     
     code = template.replace("$$name$$", udf.name)\
+      .replace("/", "\n")\
+      .replace("$$indent$$","    ")\
       .replace("$$inparams$$",paramsStr)\
       .replace("$$returntype$$",returnType)\
       .replace("$$code$$",lines)
