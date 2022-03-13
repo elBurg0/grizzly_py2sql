@@ -1,22 +1,31 @@
 # Generated from grammar/Python3.g4 by ANTLR 4.9.2
 from antlr4 import *
+from py2sqlcompiler import py2sql_compiler
 if __name__ is not None and "." in __name__:
     from .Python3Parser import Python3Parser
 else:
     from Python3Parser import Python3Parser
 
 # This class defines a complete generic visitor for a parse tree produced by Python3Parser.
+#statements = []
 
 class Python3Visitor(ParseTreeVisitor):
+    def __init__(self):
+        self.statements = []
+        self.assignments = []
 
     # Visit a parse tree produced by Python3Parser#single_input.
     def visitSingle_input(self, ctx:Python3Parser.Single_inputContext):
-        return self.visitChildren(ctx)
+        self.statements.append("BEGIN")
+        self.visitChildren(ctx)
+        self.statements.append("END;")
 
 
     # Visit a parse tree produced by Python3Parser#file_input.
     def visitFile_input(self, ctx:Python3Parser.File_inputContext):
-        return self.visitChildren(ctx)
+        self.statements.append("BEGIN")
+        self.visitChildren(ctx)
+        self.statements.append("END;")
 
 
     # Visit a parse tree produced by Python3Parser#stmt.
@@ -36,7 +45,13 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#assignment_stmt.
     def visitAssignment_stmt(self, ctx:Python3Parser.Assignment_stmtContext):
-        return self.visitChildren(ctx)
+        self.assignments.append([str(ctx.NAME()), py2sql_compiler.map_type(ctx.expr().NAME)])
+        # TODO rework
+        if ctx.expr().NUMBER():
+            self.statements.append(str(ctx.NAME()) + " := " + str(ctx.expr().NUMBER()) + ";")
+        else:
+           self.statements.append(str(ctx.NAME()) + " := " + str(ctx.expr().NAME()) + ";") 
+        #return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by Python3Parser#flow_stmt.
@@ -52,6 +67,12 @@ class Python3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3Parser#continue_stmt.
     def visitContinue_stmt(self, ctx:Python3Parser.Continue_stmtContext):
         return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by Python3Parser#return_stmt.
+    def visitReturn_stmt(self, ctx:Python3Parser.Return_stmtContext):
+        self.statements.append(f"RETURN {ctx.expr().getText()};")
+        #return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by Python3Parser#compound_stmt.
@@ -71,7 +92,13 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#for_stmt.
     def visitFor_stmt(self, ctx:Python3Parser.For_stmtContext):
-        return self.visitChildren(ctx)
+        if ctx.range():
+            self.statements.append("FOR " + str(ctx.expr().NAME()) + " IN " + str(ctx.range().expr()[0].NUMBER()) + ".." + str(ctx.range().expr()[1].NUMBER()))
+            self.statements.append('LOOP')
+            self.visitChildren(ctx)
+            # TODO Fix visit children -> just visit children with indent
+            self.statements.append("END LOOP;")
+        #return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by Python3Parser#suite.
@@ -106,7 +133,7 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#expr.
     def visitExpr(self, ctx:Python3Parser.ExprContext):
-        return self.visitChildren(ctx)
+        return ctx.getText()
 
 
 

@@ -23,14 +23,22 @@ def main(argv):
     walker.walk(listener, tree)
 
     visitor = Python3Visitor()
-    output = visitor.visit(tree)
+    visitor.visit(tree)
+    print(visitor.assignments)
 
-    return """
-BEGIN 
-    RETURN CONCAT (a, '_compiled');
-END;
-"""
+    output = " ".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
+    output += " ".join(str(line) for line in visitor.statements)
 
+    return output
+
+
+def map_type(input):
+    if type(input) == str:
+        return "INTEGER"
+    elif type(input) == int:
+        return "NUMBER"
+    else:
+        return "INTEGER"
 
 
 if __name__ == '__main__':

@@ -48,8 +48,8 @@ print("----------------------------------------")
 print("\n")
 
 
-def myfunc2(a: str) -> str:
-      return a + "grizzly"
+def myfunc2(a: int) -> int:
+      return 5
 
 
 import cx_Oracle
@@ -76,7 +76,7 @@ try:
       #df = df[df.globaleventid == 467268277] # filter it
 
       df = df[["id", "description"]]
-      df["gefunctioned"] = df["description"].map(myfunc2, "sql") # apply myfunc
+      df["gefunctioned"] = df["id"].map(myfunc2, "sql") # apply myfunc
 
 
       print("\n")
