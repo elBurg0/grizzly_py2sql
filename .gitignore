@@ -1,10 +1,5 @@
 .venv_win/*
 .venv_mac/*
-grizzly/__pycache__/__init__.cpython-39.pyc
-grizzly/__pycache__/aggregates.cpython-39.pyc
-grizzly/__pycache__/expression.cpython-39.pyc
-grizzly/__pycache__/generator.cpython-39.pyc
-grizzly/__pycache__/relationaldbexecutor.cpython-39.pyc
-grizzly/__pycache__/sqlgenerator.cpython-39.pyc
-grizzly/dataframes/__pycache__/__init__.cpython-39.pyc
-grizzly/dataframes/__pycache__/frame.cpython-39.pyc
+grizzly/__pycache__/*
+grizzly/dataframes/__pycache__/*
+py2sqlcompiler/__pycache__/*

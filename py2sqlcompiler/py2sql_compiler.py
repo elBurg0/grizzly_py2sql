@@ -1,4 +1,3 @@
-import sys
 import pathlib
 from antlr4 import *
 from py2sqlcompiler.py_parser.Python3Lexer import Python3Lexer
