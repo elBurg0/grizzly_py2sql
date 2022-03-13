@@ -1,10 +1,10 @@
 import sys
 import pathlib
 from antlr4 import *
-from tinypython.src.build.compiler.parser_py.Python3Lexer import Python3Lexer
-from tinypython.src.build.compiler.parser_py.Python3Parser import Python3Parser
-from tinypython.src.build.compiler.parser_py.Python3Listener import Python3Listener
-from tinypython.src.build.compiler.parser_py.Python3Visitor import Python3Visitor
+from py2sqlcompiler.py_parser.Python3Lexer import Python3Lexer
+from py2sqlcompiler.py_parser.Python3Parser import Python3Parser
+from py2sqlcompiler.py_parser.Python3Listener import Python3Listener
+from py2sqlcompiler.py_parser.Python3Visitor import Python3Visitor
  
 
 

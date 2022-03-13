@@ -52,13 +52,9 @@ class Python3Listener(ParseTreeListener):
     def exitSmall_stmt(self, ctx:Python3Parser.Small_stmtContext):
         pass
 
-    
+
     # Enter a parse tree produced by Python3Parser#assignment_stmt.
     def enterAssignment_stmt(self, ctx:Python3Parser.Assignment_stmtContext):
-        if ctx.expr().NUMBER():
-            print(str(ctx.NAME()) + " := " + str(ctx.expr().NUMBER()) + ";")
-        else:
-           print(str(ctx.NAME()) + " := " + str(ctx.expr().NAME()) + ";") 
         pass
 
     # Exit a parse tree produced by Python3Parser#assignment_stmt.
@@ -122,15 +118,10 @@ class Python3Listener(ParseTreeListener):
 
     # Enter a parse tree produced by Python3Parser#for_stmt.
     def enterFor_stmt(self, ctx:Python3Parser.For_stmtContext):
-        if ctx.range():
-            print("FOR " + str(ctx.expr().NAME()) + " IN " + str(ctx.range().expr()[0].NUMBER()) + ".." + str(ctx.range().expr()[1].NUMBER()))
-            print('LOOP')
-            ctx.suite()
         pass
 
     # Exit a parse tree produced by Python3Parser#for_stmt.
     def exitFor_stmt(self, ctx:Python3Parser.For_stmtContext):
-        print("END LOOP;")
         pass
 
 

@@ -3,7 +3,7 @@ from grizzly.dataframes.frame import Limit, Ordering, UDF, ModelUDF, Table, Exte
 from grizzly.expression import ArithmExpr, ArithmeticOperation, BoolExpr, BooleanOperation, ComputedCol, Constant, ExpressionException, FuncCall, ColRef, LogicExpr, LogicOperation, SetExpr, SetOperation
 from grizzly.generator import GrizzlyGenerator
 
-from tinypython import py2sql_compiler
+from py2sqlcompiler import py2sql_compiler
 
 from typing import List, Tuple
 from pathlib import Path

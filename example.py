@@ -62,9 +62,6 @@ try:
         dsn = "localhost/orclpdb",
         encoding="UTF-8")
 
-      # show the version of the Oracle Database
-      print(connection.version)
-
       c = connection.cursor()
 
       c.execute("""
@@ -73,15 +70,7 @@ try:
       """)
 
       rows = c.fetchall()
-
-
-      # Now query the rows back
-      for row in c.execute('select description, done from todoitem'):
-            if (row[1]):
-                  print(row[0], "is done")
-            else:
-                  print(row[0], "is NOT done")
-
+      
       grizzly.use(RelationalExecutor(connection, SQLGenerator("postgresql")))
       df = grizzly.read_table("todoitem")  # load table
       #df = df[df.globaleventid == 467268277] # filter it
