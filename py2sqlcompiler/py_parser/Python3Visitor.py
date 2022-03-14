@@ -1,6 +1,7 @@
 # Generated from grammar/Python3.g4 by ANTLR 4.9.2
 from antlr4 import *
-from py2sqlcompiler import py2sql_compiler
+from grizzly import sqlgenerator
+
 if __name__ is not None and "." in __name__:
     from .Python3Parser import Python3Parser
 else:
@@ -10,9 +11,10 @@ else:
 #statements = []
 
 class Python3Visitor(ParseTreeVisitor):
-    def __init__(self):
+    def __init__(self, profile):
         self.statements = []
         self.assignments = []
+        self.profile = profile
 
     # Visit a parse tree produced by Python3Parser#single_input.
     def visitSingle_input(self, ctx:Python3Parser.Single_inputContext):
@@ -46,8 +48,10 @@ class Python3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3Parser#assignment_stmt.
     def visitAssignment_stmt(self, ctx:Python3Parser.Assignment_stmtContext):
         assignment = self.visitChildren(ctx)
-        self.statements.append(f"    {str(ctx.NAME())} := {assignment};")
-        self.assignments.append(["    " + str(str(ctx.NAME())), py2sql_compiler.map_type(str(ctx.types().getText()))])
+        var = str(ctx.NAME())
+        var_type = sqlgenerator.SQLGenerator._mapTypes(str(ctx.types().getText()), self.profile)
+        self.statements.append(f"    {var} := {assignment};")
+        self.assignments.append(["    " + var, var_type])
 
     # Visit a parse tree produced by Python3Parser#flow_stmt.
     def visitFlow_stmt(self, ctx:Python3Parser.Flow_stmtContext):

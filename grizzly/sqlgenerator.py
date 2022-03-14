@@ -295,18 +295,26 @@ class SQLGenerator:
     return resultLines
 
   @staticmethod
-  def _mapTypes(pythonType: str, lang: str) -> str:
-    if lang == "sql":
+  def _mapTypes(pythonType: str, profile: str) -> str:  
+
+    if profile == "postgresql":
+      if pythonType == "str":
+        return "VARCHAR"
+      elif pythonType == "int":
+        return "INTEGER"
+      elif pythonType == "float":
+        return "FLOAT8"
+
+    elif profile == "oracle":
       if pythonType == "str":
         return "VARCHAR2"
-      elif pythonType =="int":
+      elif pythonType == "int":
         return "INTEGER"
+      elif pythonType == "float":
+        return "FLOAT"
 
-    elif lang == "py":  
-      if pythonType == "str":
-        return "varchar(1024)"
-      # elif pythonType == "long":
-      #   return "bigint"
+    # elif pythonType == "long":
+    #   return "bigint"
     else: 
       return pythonType
 
@@ -473,9 +481,9 @@ class SQLGenerator:
     return (pre,exprSQL)
 
   @staticmethod
-  def _generateCreateFunc(udf: UDF, templates) -> str:
-    paramsStr = ",".join([f"{p.name} {SQLGenerator._mapTypes(p.type, udf.lang)}" for p in udf.params])
-    returnType = SQLGenerator._mapTypes(udf.returnType, udf.lang)
+  def _generateCreateFunc(udf: UDF, templates, profile) -> str:
+    paramsStr = ",".join([f"{p.name} {SQLGenerator._mapTypes(p.type, profile)}" for p in udf.params])
+    returnType = SQLGenerator._mapTypes(udf.returnType, profile)
 
     if isinstance(udf, ModelUDF):
       lines = templates[udf.modelType.name + "_code"]
@@ -487,18 +495,16 @@ class SQLGenerator:
         lines = udf.lines[1:]
         lines = SQLGenerator._unindent(lines)
         lines = "".join(lines)
-        template = templates["createfunction"]
+        template = templates["createfunction_py"]
       else:
-
         lines = udf.lines[1:]
         lines = SQLGenerator._unindent(lines)
         lines = "".join(lines)
-        # TODO declare
-        lines = py2sql_compiler.main([1, lines])
+        lines = py2sql_compiler.main([1, lines], profile)
         template = templates["createfunction_sql"]
     
     code = template.replace("$$name$$", udf.name)\
-      .replace("/", "\n")\
+      .replace(" / ", "\n")\
       .replace("$$indent$$","    ")\
       .replace("$$inparams$$",paramsStr)\
       .replace("$$returntype$$",returnType)\
@@ -521,7 +527,7 @@ class SQLGenerator:
 
   def _generateFuncCall(self, f: FuncCall):
     if f.udf:
-      pre = [SQLGenerator._generateCreateFunc(f.udf, self.templates)]
+      pre = [SQLGenerator._generateCreateFunc(f.udf, self.templates, self.profile)]
     else:
       pre = []
 

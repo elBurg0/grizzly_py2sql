@@ -8,7 +8,7 @@ from py2sqlcompiler.py_parser.Python3Visitor import Python3Visitor
 
 
 
-def main(argv):
+def main(argv, profile):
     if argv[0] == 0:
         input_stream = FileStream(argv[1])
     else:
@@ -22,10 +22,10 @@ def main(argv):
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
-    visitor = Python3Visitor()
+    visitor = Python3Visitor(profile)
     visitor.visit(tree)
 
-    output = "\n".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
+    output = "\n".join((f"{line[0]} {line[1]}(30);") for line in visitor.assignments)
     output += "\n" +  "\n".join(str(line) for line in visitor.statements)
 
     return output

@@ -13,7 +13,32 @@ def myfunc2(a: int) -> str:
 
       return g
 
+def myfunc3(a: int) -> str:
+      return a + "_grizzly"
 
+#POSTGRESQL
+import psycopg2
+
+# Connect to your postgres DB
+conn = psycopg2.connect(dbname="postgres", user="postgres", password="post_DB123")
+
+
+grizzly.use(RelationalExecutor(conn, SQLGenerator("postgresql")))
+df = grizzly.read_table("todoitem")  # load table
+#df = df[df.globaleventid == 467268277] # filter it
+
+df = df[["id", "description"]]
+df["gefunctioned"] = df["id"].map(myfunc3, "sql") # apply myfunc
+
+print("----------------------------------------")
+print(df.generateQuery())
+print("----------------------------------------")
+
+df.show(pretty=True)
+
+print("\n\n")
+
+# ORACLE PL/SQL
 import cx_Oracle
 
 connection = None
@@ -24,7 +49,7 @@ try:
         dsn = "localhost/orclpdb",
         encoding="UTF-8")
       
-      grizzly.use(RelationalExecutor(connection, SQLGenerator("postgresql")))
+      grizzly.use(RelationalExecutor(connection, SQLGenerator("oracle")))
       df = grizzly.read_table("todoitem")  # load table
       #df = df[df.globaleventid == 467268277] # filter it
 
@@ -43,4 +68,3 @@ finally:
     # release the connection
     if connection:
         connection.close()
-
