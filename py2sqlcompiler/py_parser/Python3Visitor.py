@@ -95,12 +95,12 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#for_stmt.
     def visitFor_stmt(self, ctx:Python3Parser.For_stmtContext):
-        if ctx.range():
-            self.statements.append("FOR " + str(ctx.expr().NAME()) + " IN " + str(ctx.range().expr()[0].NUMBER()) + ".." + str(ctx.range().expr()[1].NUMBER()))
-            self.statements.append('LOOP')
-            self.visitChildren(ctx)
-            # TODO Fix visit children -> just visit children with indent
-            self.statements.append("END LOOP;")
+        if ctx.rang():
+            self.statements.append("FOR " + str(ctx.expr().NAME()) + " IN " + str(ctx.rang().expr()[0].NUMBER()) + ".." + str(ctx.rang().expr()[1].NUMBER()))
+        self.statements.append('LOOP')
+        self.visitSuite(ctx)
+        # TODO Fix visit children -> just visit children with indent
+        self.statements.append("END LOOP;")
         #return self.visitChildren(ctx)
 
 
@@ -119,13 +119,13 @@ class Python3Visitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by Python3Parser#range.
-    def visitRange(self, ctx:Python3Parser.RangeContext):
+    # Visit a parse tree produced by Python3Parser#rang.
+    def visitRang(self, ctx:Python3Parser.RangeContext):
         return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by Python3Parser#list.
-    def visitList(self, ctx:Python3Parser.ListContext):
+    def visitLis(self, ctx:Python3Parser.ListContext):
         return self.visitChildren(ctx)
 
 
@@ -136,6 +136,7 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#expr.
     def visitExpr(self, ctx:Python3Parser.ExprContext):
+        # Check if string should be added -> CONCAT() SQL funtion
         if "+" in ctx.getText() and (ctx.expr()[0].STRING() or ctx.expr()[1].STRING()):
             l = ctx.expr()[0].getText().replace('"', "'")
             r = ctx.expr()[1].getText().replace('"', "'")
