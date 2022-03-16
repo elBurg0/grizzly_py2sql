@@ -5,12 +5,13 @@ from py2sqlcompiler.py_parser2.Python3Parser import Python3Parser
 from py2sqlcompiler.py_parser2.Python3Listener import Python3Listener
 from py2sqlcompiler.py_parser2.Python3Visitor import Python3Visitor
 
+
 def main(argv, profile):
     if argv[0] == 0:
         input_stream = FileStream(argv[1])
     else:
         input_stream = InputStream(argv[1])
-    
+
     lexer = Python3Lexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = Python3Parser(stream)
@@ -25,9 +26,11 @@ def main(argv, profile):
 
    # If oracle db add length of variable after declaration
     if profile == "oracle":
-        output = "\n".join((f"{line[0]} {line[1]}(12);") for line in visitor.assignments)
+        output = "\n".join((f"{line[0]} {line[1]}(12);")
+                           for line in visitor.assignments)
     else:
-        output = "\n".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
+        output = "\n".join((f"{line[0]} {line[1]};")
+                           for line in visitor.assignments)
 
     output += "\n" + "\n".join(str(line) for line in visitor.statements)
 
