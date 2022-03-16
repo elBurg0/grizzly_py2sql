@@ -37,19 +37,23 @@ def myfunc2(a: int) -> str:
 
 @timing.timing
 def show_udfs(df):
+    # Prepare df
     df = df[["test_text", "test_float", "test_number"]]
     df["udf"] = df["test_id"].map(myfunc2, "sql")  # apply myfunc
 
+    # Print generated query
     print("----------------------------------------")
     print(df.generateQuery())
     print("----------------------------------------")
 
+    # Show table
     df.show(pretty=True, limit=20)
     print("----------------------------------------")
 
 
 def main():
     print("\n", end="")
+    # Specify how many entries you want to insert and update
     entries = 100
 
     # POSTGRESQL
