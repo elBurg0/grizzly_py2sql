@@ -1,7 +1,10 @@
+oracle:
+  createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURN $$returntype$$ / IS / $$code$$
+
 postgresql:
   limit: limit
-  createfunction: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ LANGUAGE plpython3u AS '$$code$$' parallel safe;
-  createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ LANGUAGE plpgsql AS $$ DECLARE '$$code$$' END $$ parallel safe;
+  createfunction_py: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / $$code$$$$ LANGUAGE plpython3u;
+  createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / DECLARE / $$code$$ / $$ LANGUAGE plpgsql;
   externaltable: 
     - CREATE SERVER IF NOT EXISTS import FOREIGN DATA WRAPPER $$fdw_extension_name$$
     - DROP FOREIGN TABLE IF EXISTS $$name$$
