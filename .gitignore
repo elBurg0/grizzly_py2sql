@@ -3,3 +3,5 @@
 grizzly/__pycache__/*
 grizzly/dataframes/__pycache__/*
 py2sqlcompiler/__pycache__/*
+py2sqlcompiler/py_parser/__pycache__/*
+py2sqlcompiler/py_parser2/__pycache__/*
