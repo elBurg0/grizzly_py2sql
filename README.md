@@ -1,8 +1,8 @@
-### Python to SQL Compiler
+# Python to SQL Compiler
 ## Using
-# Credentials
+### Credentials
 Add the credentials of your oracle or postgresql db to the config.py file.
-# Examples
+### Examples
 In the example.py file you can find a projection of an udf on the oracle and postgresql dbs. 
 The data that is needed for that insertion is provided by the data_prep module. 
 The module creates the Table "speedtest" and inserts a given amount of records into the db.
