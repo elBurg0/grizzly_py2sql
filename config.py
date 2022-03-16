@@ -1,11 +1,11 @@
 oracle = dict(
-    user="demopython",
-    password="orcl_py123",
+    user="",
+    password="",
     dsn="localhost/orclpdb"
 )
 
 postgres = dict(
-    dbname="postgres",
-    user="post_py",
-    password="post_py_DB123"
+    dbname="",
+    user="",
+    password=""
 )
