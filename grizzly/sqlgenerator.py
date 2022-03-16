@@ -296,7 +296,8 @@ class SQLGenerator:
 
   @staticmethod
   def _mapTypes(pythonType: str, profile: str) -> str:  
-
+    # TODO Outsource mapping to grizzly.yaml
+    # Mapping for postgresql db
     if profile == "postgresql":
       if pythonType == "str":
         return "VARCHAR"
@@ -304,7 +305,7 @@ class SQLGenerator:
         return "INTEGER"
       elif pythonType == "float":
         return "FLOAT8"
-
+    # Mapping for oracle db
     elif profile == "oracle":
       if pythonType == "str":
         return "VARCHAR2"
