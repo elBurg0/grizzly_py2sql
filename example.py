@@ -1,70 +1,74 @@
 import grizzly
 import grizzly.aggregates
-import sqlite3
+
+import time
 
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
 
-def myfunc2(a: int) -> str:
-      i: int = 12
-      f: float = 3
-      m: int = 3 + a
-      g: str = m + "_functioned"
+import data_prep
+import timing
 
-      return g
-
-def myfunc3(a: int) -> str:
-      return a + "_grizzly"
-
-#POSTGRESQL
+import sqlite3
 import psycopg2
-
-# Connect to your postgres DB
-conn = psycopg2.connect(dbname="postgres", user="postgres", password="post_DB123")
-
-
-grizzly.use(RelationalExecutor(conn, SQLGenerator("postgresql")))
-df = grizzly.read_table("todoitem")  # load table
-#df = df[df.globaleventid == 467268277] # filter it
-
-df = df[["id", "description"]]
-df["gefunctioned"] = df["id"].map(myfunc3, "sql") # apply myfunc
-
-print("----------------------------------------")
-print(df.generateQuery())
-print("----------------------------------------")
-
-df.show(pretty=True)
-
-print("\n\n")
-
-# ORACLE PL/SQL
 import cx_Oracle
 
-connection = None
-try:
-      connection = cx_Oracle.connect(
-        user = "demopython",
-        password = "orcl_py123",
-        dsn = "localhost/orclpdb",
-        encoding="UTF-8")
-      
-      grizzly.use(RelationalExecutor(connection, SQLGenerator("oracle")))
-      df = grizzly.read_table("todoitem")  # load table
-      #df = df[df.globaleventid == 467268277] # filter it
 
-      df = df[["id", "description"]]
-      df["gefunctioned"] = df["id"].map(myfunc2, "sql") # apply myfunc
+def myfunc1(a: int) -> int:
+      i: int = 12
+      m: int = a + i
+      for i in range(1,a):
+            if i + a > 10:
+                  return 10 * a
+            elif a > 1:
+                  m: int = a
+            else:
+                  return 0
+
+            f: int = f + a
+      
+      return m
+
+def myfunc2(a: int) -> str:
+      i: int = 2
+      f: str = "hello"
+      return a + "_grizzly"
+
+
+@timing.timing
+def show_udfs(df):
+      df = df[["test_text", "test_float", "test_number"]]
+      df["udf"] = df["test_id"].map(myfunc2, "sql") # apply myfunc
 
       print("----------------------------------------")
       print(df.generateQuery())
       print("----------------------------------------")
 
-      df.show(pretty=True)
+      df.show(pretty=True, limit=20)
+      print("----------------------------------------")
 
-except cx_Oracle.Error as error:
-    print("Error -", error)
-finally:
-    # release the connection
-    if connection:
-        connection.close()
+#postgres superuser
+
+def main():
+      print("\n", end ="")
+      entries = 100
+
+      #POSTGRESQL
+      print("Postgresql test:")
+      with psycopg2.connect(dbname="postgres", user="postgres", password="post_DB123", keepalives=1) as conn:
+            data_prep.insert_data(conn, entries)
+            grizzly.use(RelationalExecutor(conn, SQLGenerator("postgresql")))
+            df = grizzly.read_table("speedtest")
+            show_udfs(df)
+
+
+      # ORACLE PL/SQL
+      print("\nOracle test:")
+      with cx_Oracle.connect(user = "demopython", password = "orcl_py123", dsn = "localhost/orclpdb") as connection:
+            data_prep.insert_data(connection, entries)
+            grizzly.use(RelationalExecutor(connection, SQLGenerator("oracle")))
+            df = grizzly.read_table("speedtest")  # load table
+            show_udfs(df)
+
+if __name__ == "__main__":
+      main()
