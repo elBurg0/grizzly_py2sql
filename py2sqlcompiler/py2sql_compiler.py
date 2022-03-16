@@ -1,18 +1,16 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser.Python3Lexer import Python3Lexer
-from py2sqlcompiler.py_parser.Python3Parser import Python3Parser
-from py2sqlcompiler.py_parser.Python3Listener import Python3Listener
-from py2sqlcompiler.py_parser.Python3Visitor import Python3Visitor
- 
-
-
+from py2sqlcompiler.py_parser2.Python3Lexer import Python3Lexer
+from py2sqlcompiler.py_parser2.Python3Parser import Python3Parser
+from py2sqlcompiler.py_parser2.Python3Listener import Python3Listener
+from py2sqlcompiler.py_parser2.Python3Visitor import Python3Visitor
 
 def main(argv, profile):
     if argv[0] == 0:
         input_stream = FileStream(argv[1])
     else:
         input_stream = InputStream(argv[1])
+    
     lexer = Python3Lexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = Python3Parser(stream)
@@ -25,19 +23,15 @@ def main(argv, profile):
     visitor = Python3Visitor(profile)
     visitor.visit(tree)
 
-    output = "\n".join((f"{line[0]} {line[1]}(30);") for line in visitor.assignments)
-    output += "\n" +  "\n".join(str(line) for line in visitor.statements)
+   # If oracle db add length of variable after declaration
+    if profile == "oracle":
+        output = "\n".join((f"{line[0]} {line[1]}(12);") for line in visitor.assignments)
+    else:
+        output = "\n".join((f"{line[0]} {line[1]};") for line in visitor.assignments)
+
+    output += "\n" + "\n".join(str(line) for line in visitor.statements)
 
     return output
-
-
-def map_type(input):
-    if input == "str":
-        return "VARCHAR2(30)"
-    elif input == "int":
-        return "NUMBER"
-    elif input == "float":
-        return "FLOAT"
 
 
 if __name__ == '__main__':
