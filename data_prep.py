@@ -4,82 +4,82 @@ import psycopg2
 import cx_Oracle
 import timing
 
+class Data_prep:
+    def __init__(self, con, index, all_iterations):
+        # TODO only add new rows to sql
+        self.iterations = all_iterations[index]
+        self.last_iteration = 0
 
-def create_table(c):
-    # Delete table and create table
-    try:
-        c.execute('DROP TABLE speedtest')
-    except Exception as e:
-        print("No Table deleted:", e)
-    finally:
-        c.execute("""CREATE TABLE speedtest (
-            test_id INT,
-            test_text VARCHAR(255), 
-            test_number INT,
-            test_float FLOAT
+        self.con = con
+        self.c = con.cursor()
+    
+        
+        if index == 0:
+            self.drop_table()
+            self.create_table()
+            self.insert_data(0, self.iterations)
+        else:
+            self.c.execute("SELECT COUNT(*) FROM speedtest")
+            rows = self.c.fetchall()
+            # Add none if already in db (mulitple cases on same db)
+            if rows[0][0] == self.iterations:
+                return
+            # Only add new entries
+            else:
+                self.last_iteration = all_iterations[index-1]
+                self.insert_data(self.last_iteration, self.iterations)
+
+    def drop_table(self):
+        try:
+            self.c.execute('DROP TABLE speedtest')
+        except Exception as e:
+            print("No Table deleted:", e)
+
+    def create_table(self):
+        self.c.execute("""CREATE TABLE speedtest (
+                test_id INT,
+                test_text VARCHAR(255), 
+                test_number INT,
+                test_float FLOAT
             )
         """)
 
+    def insert_data(self, start, end):
+        rows = []
+        rows2 = []
 
-@timing.timing
-def insert_data(con, iterations):
-    c = con.cursor()
-    create_table(c)
-    rows = []
-    rows2 = []
+        # Prepare Data for insertion
+        for i in range(start, end):
+            text = f"'{str(i)}. Entry'"
+            rows.append(f"({i}, {text}, {i}, {float(i)})")
+            rows2.append((i, text, i, float(i)))
 
-    # Prepare Data for insertion
-    for i in range(1, iterations + 1):
-        text = f"'{str(i)}. Entry'"
-        rows.append(f"({i}, {text}, {i}, {float(i)})")
-        rows2.append((i, text, i, float(i)))
-
-    # Insert into postgresql db
-    if "postgres" in con.dsn:
-        values = ", ".join(map(str, rows))
-        c.execute(f"""
-                    INSERT INTO speedtest(
-                        test_id,
-                        test_text,
-                        test_number,
-                        test_float
-                    )
-                    VALUES {values}
-            """)
-
-    # Insert into oracle db
-    elif "orcl" in con.dsn:
-        c.executemany(
-            f"""
-                    INSERT INTO speedtest(
-                        test_id,
-                        test_text,
-                        test_number,
-                        test_float
+        try:
+        # Insert into postgresql db
+            values = ", ".join(map(str, rows))
+            self.c.execute(f"""
+                        INSERT INTO speedtest(
+                            test_id,
+                            test_text,
+                            test_number,
+                            test_float
                         )
-                    VALUES (:test_id, :test_text, :test_number, :test_float)
-            """, rows2
-        )
+                        VALUES {values}
+                """)
 
-    con.commit()
-    print(f"-- Inserted {iterations} rows to DB: {con.dsn}")
+        # Insert into oracle db
+        except Exception as e:
+            self.c.executemany(
+                f"""
+                        INSERT INTO speedtest(
+                            test_id,
+                            test_text,
+                            test_number,
+                            test_float
+                            )
+                        VALUES (:test_id, :test_text, :test_number, :test_float)
+                """, rows2
+            )
 
-
-def main(iters):
-    # Prep postgresql db
-    conn = psycopg2.connect(
-        dbname=config.postgres['dbname'],
-        user=config.postgres['user'],
-        password=config.postgres['password'])
-    insert_data(conn, iters)
-
-    # Prep oracle db
-    con = cx_Oracle.connect(
-        user=config.oracle['user'],
-        password=config.oracle['password'],
-        dsn=config.oracle['dsn'])
-    insert_data(con, iters)
-
-
-if __name__ == "__main__":
-    main(100)
+        self.con.commit()
+        print(f"-- Inserted {self.iterations - self.last_iteration} rows to DB: {self.con.dsn}")
