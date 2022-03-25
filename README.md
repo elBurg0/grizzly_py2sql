@@ -10,3 +10,6 @@ The module creates the Table "speedtest" and inserts a given amount of records i
 For compiling the udfs please specify the parameter lang at the .map() function in which language the udf should be translated:
 - "sql" for compiling the python udf to PL/SQL or PGPL/SQL
 - "py" for creating a functgion with python code on DB (only working on postgresql db with plpython3u enabled)
+
+For testing the database use the config.py file and add your test configuartions in the format:
+[name of test, name of db (postgres/oracle), connection dictonary, compiler method (sql/py)]
