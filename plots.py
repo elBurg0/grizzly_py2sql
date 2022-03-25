@@ -1,8 +1,5 @@
 from example import compare_sql
-import config
 import matplotlib.pyplot as plt
-import psycopg2
-import cx_Oracle
 
 times = []
 test_iterations2 = [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000]
