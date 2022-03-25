@@ -1,12 +1,10 @@
 import grizzly
 import grizzly.aggregates
 
-import config
-from grizzly.dataframes.frame import DataFrame
-
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
 
+import config
 import data_prep
 import timing
 
@@ -47,7 +45,6 @@ def show_udfs(df, lang):
 
 
 def compare_sql(iteration_index, iterations):
-    # Specify how many entries you want to insert and update
     times = []
 
     for s in config.test_cases:
@@ -61,10 +58,37 @@ def compare_sql(iteration_index, iterations):
             con = cx_Oracle.connect(user=s[2]['user'], password=s[2]['password'], dsn=s[2]['dsn'])
         
         with con as conn:
+            # Insert test data into db
             data_prep.Data_prep(conn, iteration_index, iterations)
+            # Tell grizzly connection and db-type
             grizzly.use(RelationalExecutor(conn, SQLGenerator(s[1])))
+            # create df as table reference
             df = grizzly.read_table("speedtest")
+            # execute query and get time for that
             time = show_udfs(df, s[3])
             times.append([iterations[iteration_index], s[0], time[1]])
 
     return times
+
+
+
+import sqlite3
+con = sqlite3.connect("grizzly.db")
+
+grizzly.use(RelationalExecutor(con, SQLGenerator()))
+df_eval = grizzly.read_table("events")
+
+
+to_eval= ['df_eval[["globaleventid"]]']
+
+
+def evaluate(to_eval):
+    for line in to_eval:
+        df = eval(line)
+    return df
+
+df = evaluate(to_eval)
+qry = df.generateQuery()
+
+print("CURSOR df IS " + qry)
+
