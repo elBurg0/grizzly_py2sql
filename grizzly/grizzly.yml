@@ -1,8 +1,14 @@
 oracle:
+  int: INTEGER
+  str: VARCHAR2
+  float: FLOAT
   createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURN $$returntype$$ / IS / $$code$$
 
 postgresql:
   limit: limit
+  int: INTEGER
+  str: VARCHAR
+  float: FLOAT8
   createfunction_py: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / $$code$$$$ LANGUAGE plpython3u;
   createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / DECLARE / $$code$$ / $$ LANGUAGE plpgsql;
   externaltable: 

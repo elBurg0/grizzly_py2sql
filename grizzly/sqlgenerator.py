@@ -294,31 +294,6 @@ class SQLGenerator:
 
     return resultLines
 
-  @staticmethod
-  def _mapTypes(pythonType: str, profile: str) -> str:  
-    # TODO Outsource mapping to grizzly.yaml
-    # Mapping for postgresql db
-    if profile == "postgresql":
-      if pythonType == "str":
-        return "VARCHAR"
-      elif pythonType == "int":
-        return "INTEGER"
-      elif pythonType == "float":
-        return "FLOAT8"
-    # Mapping for oracle db
-    elif profile == "oracle":
-      if pythonType == "str":
-        return "VARCHAR2"
-      elif pythonType == "int":
-        return "INTEGER"
-      elif pythonType == "float":
-        return "FLOAT"
-
-    # elif pythonType == "long":
-    #   return "bigint"
-    else: 
-      return pythonType
-
   def _exprToSQL(self, expr) -> Tuple[List[str], str]:
     exprSQL = ""
     pre = []
@@ -483,8 +458,8 @@ class SQLGenerator:
 
   @staticmethod
   def _generateCreateFunc(udf: UDF, templates, profile) -> str:
-    paramsStr = ",".join([f"{p.name} {SQLGenerator._mapTypes(p.type, profile)}" for p in udf.params])
-    returnType = SQLGenerator._mapTypes(udf.returnType, profile)
+    paramsStr = ",".join([f"{p.name} {templates[p.type]}" for p in udf.params])
+    returnType = templates[udf.returnType]
 
     if isinstance(udf, ModelUDF):
       lines = templates[udf.modelType.name + "_code"]
@@ -492,17 +467,13 @@ class SQLGenerator:
         lines = lines.replace(key, str(value))
 
     else:
-      if udf.lang == "py":
-        lines = udf.lines[1:]
-        lines = SQLGenerator._unindent(lines)
-        lines = "".join(lines)
-        template = templates["createfunction_py"]
-      else:
-        lines = udf.lines[1:]
-        lines = SQLGenerator._unindent(lines)
-        lines = "".join(lines)
-        lines = py2sql_compiler.main([1, lines], profile)
-        template = templates["createfunction_sql"]
+      lines = udf.lines[1:]
+      lines = SQLGenerator._unindent(lines)
+      lines = "".join(lines)
+      template = templates[f"createfunction_{udf.lang}"]
+
+      if udf.lang == "sql":
+        lines = py2sql_compiler.main([1, lines], profile, templates)
     
     code = template.replace("$$name$$", udf.name)\
       .replace(" / ", "\n")\

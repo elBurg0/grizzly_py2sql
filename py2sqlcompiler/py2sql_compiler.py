@@ -6,7 +6,7 @@ from py2sqlcompiler.py_parser2.Python3Listener import Python3Listener
 from py2sqlcompiler.py_parser2.Python3Visitor import Python3Visitor
 
 
-def main(argv, profile):
+def main(argv, profile, templates):
     if argv[0] == 0:
         input_stream = FileStream(argv[1])
     else:
@@ -21,7 +21,7 @@ def main(argv, profile):
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
-    visitor = Python3Visitor(profile)
+    visitor = Python3Visitor(templates)
     visitor.visit(tree)
 
    # If oracle db add length of variable after declaration

@@ -12,10 +12,10 @@ else:
 
 
 class Python3Visitor(ParseTreeVisitor):
-    def __init__(self, profile):
+    def __init__(self, templates):
         self.statements = []
         self.assignments = []
-        self.profile = profile
+        self.templates = templates
 
     # Visit a parse tree produced by Python3Parser#single_input.
     def visitSingle_input(self, ctx: Python3Parser.Single_inputContext):
@@ -45,8 +45,7 @@ class Python3Visitor(ParseTreeVisitor):
     def visitAssignment_stmt(self, ctx: Python3Parser.Assignment_stmtContext):
         assignment = self.visitChildren(ctx)
         var = str(ctx.NAME())
-        var_type = sqlgenerator.SQLGenerator._mapTypes(
-            str(ctx.typ().getText()), self.profile)
+        var_type = self.templates[ctx.typ().getText()]
         if ["    " + var, var_type] not in self.assignments:
             self.assignments.append(["    " + var, var_type])
         self.statements.append(f"    {var} := {assignment};")
