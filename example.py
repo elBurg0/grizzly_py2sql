@@ -26,6 +26,7 @@ def myfunc4(a: int) -> int:
 def myfunc2(a: int) -> str:
     i: int = 2
     f: str = "hello"
+    print(f)
     return a + i
 
 
@@ -75,6 +76,12 @@ def compare_sql(iteration_index, iterations):
 
 import sqlite3
 con = sqlite3.connect("grizzly.db")
+
+grizzly.use(RelationalExecutor(con, SQLGenerator('postgresql')))
+df_eval = grizzly.read_table("events")
+df = grizzly.read_table("events")
+df["udf"] = df["test_id"].map(myfunc2, 'sql')
+print(df.generateQuery())
 
 to_eval= ['grizzly.use(RelationalExecutor(con, SQLGenerator("sqlite")))', 'df = grizzly.read_table("events")', 'df.generateQuery()']
 
