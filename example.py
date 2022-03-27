@@ -14,6 +14,7 @@ import cx_Oracle
 
 def myfunc4(a: int) -> int:
     i: int = 22
+    n: float = 22.3
     m: int = a + i
     for i in range(1, a):
         if i + a > 20:
@@ -24,6 +25,11 @@ def myfunc4(a: int) -> int:
     return m
 
 def myfunc2(a: int) -> str:
+    n: float = 22.3
+    g_df1 = grizzly.read_table("events")
+    g_df1["actor1name"]
+    g_df2 = grizzly.read_table("cool")
+    g_df2.generateQuery()
     i: int = 2
     f: str = "hello"
     print(f)

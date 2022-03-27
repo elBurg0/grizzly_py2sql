@@ -1,9 +1,9 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser2.Python3Lexer import Python3Lexer
-from py2sqlcompiler.py_parser2.Python3Parser import Python3Parser
-from py2sqlcompiler.py_parser2.Python3Listener import Python3Listener
-from py2sqlcompiler.py_parser2.Python3Visitor import Python3Visitor
+from py2sqlcompiler.py_parser3.Python3Lexer import Python3Lexer
+from py2sqlcompiler.py_parser3.Python3Parser import Python3Parser
+from py2sqlcompiler.py_parser3.Python3Listener import Python3Listener
+from py2sqlcompiler.py_parser3.Python3Visitor import Python3Visitor
 
 
 def main(argv, templates):
