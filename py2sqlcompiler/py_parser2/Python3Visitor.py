@@ -101,7 +101,7 @@ class Python3Visitor(ParseTreeVisitor):
         if ctx.rang():
             self.statements.append("FOR " + str(ctx.expr().NAME()) + " IN " + str(
                 ctx.rang().expr()[0].getText()) + ".." + str(ctx.rang().expr()[1].getText()))
-            self.statements.append('LOOP')
+            self.statements.append("LOOP")
             self.visitSuite(ctx)
             # TODO Fix visit children -> just visit children with indent
             self.statements.append("END LOOP;")
@@ -117,6 +117,7 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#print_stmt.
     def visitPrint_stmt(self, ctx: Python3Parser.Print_stmtContext):
+        self.statements.append(f"dbms_output.put_line({ctx.expr().getText()}); ")
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#range.
