@@ -71,7 +71,7 @@ suite: simple_stmt | NEWLINE INDENT stmt+ DEDENT;
 rang: 'range' '(' expr ',' expr')';
 lis: expr;
 test: expr (comp_op expr)*;  // differents from the original grammar
-print_stmt: 'print' '(' STRING ')' | 'print' '(' expr ')';
+print_stmt: 'print' '(' expr ')';
 
 comp_op: '<' | '>' | '==' | '>=' | '<=' | '!=';
 expr:
