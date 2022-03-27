@@ -473,7 +473,7 @@ class SQLGenerator:
       template = templates[f"createfunction_{udf.lang}"]
 
       if udf.lang == "sql":
-        lines = py2sql_compiler.main([1, lines], profile, templates)
+        lines = py2sql_compiler.main([1, lines], templates)
     
     code = template.replace("$$name$$", udf.name)\
       .replace(" / ", "\n")\

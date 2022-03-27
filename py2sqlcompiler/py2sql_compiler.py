@@ -6,7 +6,7 @@ from py2sqlcompiler.py_parser2.Python3Listener import Python3Listener
 from py2sqlcompiler.py_parser2.Python3Visitor import Python3Visitor
 
 
-def main(argv, profile, templates):
+def main(argv, templates):
     if argv[0] == 0:
         input_stream = FileStream(argv[1])
     else:
@@ -25,7 +25,7 @@ def main(argv, profile, templates):
     visitor.visit(tree)
 
    # If oracle db add length of variable after declaration
-    if profile == "oracle":
+    if templates.profile == "oracle":
         output = "\n".join((f"{line[0]} {line[1]}(12);")
                            for line in visitor.assignments)
     else:
