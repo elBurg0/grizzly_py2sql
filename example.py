@@ -1,5 +1,6 @@
 import grizzly
 import grizzly.aggregates
+from grizzly.dataframes.frame import DataFrame
 
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
@@ -75,20 +76,24 @@ def compare_sql(iteration_index, iterations):
 import sqlite3
 con = sqlite3.connect("grizzly.db")
 
-grizzly.use(RelationalExecutor(con, SQLGenerator()))
-df_eval = grizzly.read_table("events")
-
-
-to_eval= ['df_eval[["globaleventid"]]']
-
+to_eval= ['grizzly.use(RelationalExecutor(con, SQLGenerator("sqlite")))', 'df = grizzly.read_table("events")', 'df.generateQuery()']
 
 def evaluate(to_eval):
+    _var = ""
     for line in to_eval:
-        df = eval(line)
-    return df
+        if "=" in line:
+            exec(line)
+            _var = line.split("=")[0].replace(" ", "")
+        else:
+            _df = eval(line)
+    return _df, _var
 
-df = evaluate(to_eval)
-qry = df.generateQuery()
+_df, _var = evaluate(to_eval)
 
-print("CURSOR df IS " + qry)
+if type(_df) == DataFrame:
+    _qry = _df.generateQuery()
+else:
+    _qry = _df
+
+print(f"CURSOR {_var} IS {_qry}")
 
