@@ -122,8 +122,8 @@ class DataFrame(object):
 
     return Ordering(by,ascending, self)
 
-  def _map(self, func, lang, lines=[]):
-    # XXX: if map is called on df it's a table UDF, if called on a projection it a scalar udf
+  def _map(self, func, lang = "sql", lines=[]):
+    # XXX: if map is called on df it's a table UDFx, if called on a projection it a scalar udf
     # df.map(myfunc) vs. df['a'].map(myfunc)
 
     if inspect.isfunction(func):
@@ -277,7 +277,7 @@ class DataFrame(object):
     # return self.project([call])
     return call
 
-  def map(self, func, lang):
+  def map(self, func, lang="sql"):
     return self._map(func, lang)
 
 
