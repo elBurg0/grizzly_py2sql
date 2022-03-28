@@ -457,7 +457,7 @@ class SQLGenerator:
     return (pre,exprSQL)
 
   @staticmethod
-  def _generateCreateFunc(udf: UDF, templates, profile) -> str:
+  def _generateCreateFunc(udf: UDF, templates) -> str:
     paramsStr = ",".join([f"{p.name} {templates[p.type]}" for p in udf.params])
     returnType = templates[udf.returnType]
 
@@ -473,14 +473,17 @@ class SQLGenerator:
       template = templates[f"createfunction_{udf.lang}"]
 
       if udf.lang == "sql":
-        lines = py2sql_compiler.main([1, lines], templates)
+        pre, lines = py2sql_compiler.main([1, lines], templates)
+      else:
+        pre = ""
     
     code = template.replace("$$name$$", udf.name)\
-      .replace(" / ", "\n")\
+      .replace("$$pre$$", pre)\
       .replace("$$indent$$","    ")\
       .replace("$$inparams$$",paramsStr)\
       .replace("$$returntype$$",returnType)\
-      .replace("$$code$$",lines)
+      .replace("$$code$$",lines)\
+      .replace(" / ", "\n")
     return code
 
   @staticmethod
@@ -499,7 +502,7 @@ class SQLGenerator:
 
   def _generateFuncCall(self, f: FuncCall):
     if f.udf:
-      pre = [SQLGenerator._generateCreateFunc(f.udf, self.templates, self.profile)]
+      pre = [SQLGenerator._generateCreateFunc(f.udf, self.templates)]
     else:
       pre = []
 

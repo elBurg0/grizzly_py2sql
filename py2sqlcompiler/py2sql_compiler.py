@@ -24,17 +24,14 @@ def main(argv, templates):
     visitor = Python3Visitor(templates)
     visitor.visit(tree)
 
-   # If oracle db add length of variable after declaration
-    if templates.profile == "oracle":
-        output = "\n".join((f"{line[0]} {line[1]}(12);")
-                           for line in visitor.assignments)
-    else:
-        output = "\n".join((f"{line[0]} {line[1]};")
-                           for line in visitor.assignments)
+    # Add statements that should be queried before PL/SQL Block
+    pre = "\n".join(line for line in visitor.pre)
+    # Add statements for DECLARE block
+    output = "\n".join((f"    {line[0]} {line[1]};") for line in visitor.assignments)
+    # Add Statements for BEGIN block
+    output += "\n" + "\n    ".join(str(line) for line in visitor.statements)
 
-    output += "\n" + "\n".join(str(line) for line in visitor.statements)
-
-    return output
+    return pre, output
 
 
 if __name__ == '__main__':

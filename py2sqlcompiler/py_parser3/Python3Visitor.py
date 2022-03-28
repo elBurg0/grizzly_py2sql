@@ -15,6 +15,7 @@ else:
 
 class Python3Visitor(ParseTreeVisitor):
     def __init__(self, templates):
+        self.pre = []
         self.statements = []
         self.assignments = []
         self.to_eval = []
@@ -82,9 +83,14 @@ class Python3Visitor(ParseTreeVisitor):
         assignment = self.visitChildren(ctx)
         var = str(ctx.NAME())
         var_type = self.templates[ctx.typ().getText()]
-        if ["    " + var, var_type] not in self.assignments:
-            self.assignments.append(["    " + var, var_type])
-        self.statements.append(f"    {var} := {assignment};")
+        if [var, var_type] not in self.assignments:
+            if self.templates.profile == "oracle":
+                # TODO Make length of variable on oracle dependend of content
+                self.assignments.append([var, var_type + "(12)"])
+            else:
+                self.assignments.append([var, var_type])
+        
+        self.statements.append(f"{var} := {assignment};")
 
     # Visit a parse tree produced by Python3Parser#flow_stmt.
     def visitFlow_stmt(self, ctx: Python3Parser.Flow_stmtContext):
@@ -102,8 +108,8 @@ class Python3Visitor(ParseTreeVisitor):
     def visitReturn_stmt(self, ctx: Python3Parser.Return_stmtContext):
         #returns = ctx.expr().getText().replace('"',"'")
         returns = self.visitChildren(ctx)
-        self.statements.append(f"    RETURN {returns};")
-        return f"    RETURN {returns};"
+        self.statements.append(f"RETURN {returns};")
+        return f"RETURN {returns};"
         # return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#compound_stmt.
@@ -152,7 +158,12 @@ class Python3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3Parser#print_stmt.
     def visitPrint_stmt(self, ctx: Python3Parser.Print_stmtContext):
-        self.statements.append(f"dbms_output.put_line({ctx.expr().getText()}); ")
+        if self.templates.profile == "oracle":
+            self.pre.append("SET serveroutput ON;")
+            self.statements.append(f"dbms_output.put_line({ctx.expr().getText()});")
+        elif self.templates.profile == "postgresql":
+            # TODO make variables printable
+            self.statements.append(f"RAISE NOTICE {ctx.expr().getText()};")
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#range.
