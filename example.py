@@ -86,27 +86,7 @@ con = sqlite3.connect("grizzly.db")
 grizzly.use(RelationalExecutor(con, SQLGenerator('postgresql')))
 df_eval = grizzly.read_table("events")
 df = grizzly.read_table("events")
-df["udf"] = df["test_id"].map(myfunc2, 'sql')
+df["udf"] = df["test_id"].map(myfunc2)
 print(df.generateQuery())
 
-to_eval= ['grizzly.use(RelationalExecutor(con, SQLGenerator("sqlite")))', 'df = grizzly.read_table("events")', 'df.generateQuery()']
-
-def evaluate(to_eval):
-    _var = ""
-    for line in to_eval:
-        if "=" in line:
-            exec(line)
-            _var = line.split("=")[0].replace(" ", "")
-        else:
-            _df = eval(line)
-    return _df, _var
-
-_df, _var = evaluate(to_eval)
-
-if type(_df) == DataFrame:
-    _qry = _df.generateQuery()
-else:
-    _qry = _df
-
-print(f"CURSOR {_var} IS {_qry}")
 
