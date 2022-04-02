@@ -4,6 +4,8 @@ import grizzly
 
 # Imports for grizzly code evaluation and execution
 import sqlite3
+import cx_Oracle
+import psycopg2
 from grizzly import sqlgenerator as SQLGenerator
 from grizzly import relationaldbexecutor as RelationalExecutor
 
