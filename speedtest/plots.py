@@ -1,4 +1,4 @@
-from example import compare_sql
+from main import compare_sql
 import matplotlib.pyplot as plt
 
 times = []
@@ -6,7 +6,7 @@ test_iterations2 = [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000
 test_iterations = [5, 10, 100, 1000, 10000, 50000, 100000]
 
 if __name__ == "__main__": 
-    for f in range(1, 10000000):
+    for f in range(1, 500000):
         if f % 250000 == 0:
             test_iterations.append(f)
 
