@@ -8,3 +8,4 @@ py2sqlcompiler/py_parser2/__pycache__/*
 __pycache__/*
 config.py
 py2sqlcompiler/py_parser3/__pycache__/*
+speedtest/__pycache__/*
