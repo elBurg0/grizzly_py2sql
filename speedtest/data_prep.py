@@ -4,6 +4,7 @@ import psycopg2
 import cx_Oracle
 import timing
 
+# class for preparing the data in a given database (upload specific amount of datasets)
 class Data_prep:
     def __init__(self, con, index, all_iterations):
         # TODO only add new rows to sql
