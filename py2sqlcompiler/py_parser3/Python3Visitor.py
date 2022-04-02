@@ -1,8 +1,11 @@
 # Generated from grammar/Python3.g4 by ANTLR 4.9.2
 from antlr4 import *
 import grizzly
-from grizzly import sqlgenerator
-from grizzly import relationaldbexecutor
+
+# Imports for grizzly code evaluation and execution
+import sqlite3
+from grizzly import sqlgenerator as SQLGenerator
+from grizzly import relationaldbexecutor as RelationalExecutor
 
 if __name__ is not None and "." in __name__:
     from .Python3Parser import Python3Parser
@@ -14,6 +17,22 @@ else:
 
 
 class Python3Visitor(ParseTreeVisitor):
+    @staticmethod
+    def evaluate(to_eval):
+        _var = ""
+        _df = ""
+
+        for line in to_eval:
+            if "=" in line:
+                exec(line)
+                _var = line.split("=")[0].replace(" ", "")
+            elif ".use" in line:
+                exec(line)
+            else:
+                _df = eval(line)
+            
+        return _df, _var
+        
     def __init__(self, templates):
         self.pre = []
         self.statements = []
@@ -44,22 +63,6 @@ class Python3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3Parser#small_stmt.
     def visitSmall_stmt(self, ctx: Python3Parser.Small_stmtContext):
         return self.visitChildren(ctx)
-
-    @staticmethod
-    def evaluate(to_eval):
-        _var = ""
-        _df = ""
-
-        for line in to_eval:
-            if "=" in line:
-                exec(line)
-                _var = line.split("=")[0].replace(" ", "")
-            elif ".use" in line:
-                exec(line)
-            else:
-                _df = eval(line)
-            
-        return _df, _var
 
      # Visit a parse tree produced by Python3Parser#grizzly_stmt.
     def visitGrizzly_stmt(self, ctx:Python3Parser.Grizzly_stmtContext):
