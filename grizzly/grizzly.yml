@@ -2,7 +2,7 @@ oracle:
   int: INTEGER
   str: VARCHAR2
   float: FLOAT
-  createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURN $$returntype$$ / IS / $$code$$
+  createfunction_sql: $$pre$$ / CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURN $$returntype$$ / IS / $$code$$
 
 postgresql:
   limit: limit
