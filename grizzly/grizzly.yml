@@ -1,7 +1,7 @@
 oracle:
-  int: INTEGER
-  str: VARCHAR2
-  float: FLOAT
+  int: INTEGER(12)
+  str: VARCHAR2(12)
+  float: FLOAT(12)
   print: set serveroutput on; / dbms_output.put_line($$code$$);
   cursor: CURSOR $$var$$ IS $$qry$$
   createfunction_sql: $$pre$$ / CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURN $$returntype$$ / IS / $$code$$

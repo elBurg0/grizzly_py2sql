@@ -89,11 +89,7 @@ class Python3Visitor(ParseTreeVisitor):
         var = str(ctx.NAME())
         var_type = self.templates[ctx.typ().getText()]
         if [var, var_type] not in self.assignments:
-            if self.templates.profile == "oracle":
-                # TODO Make length of variable on oracle dependend of content
-                self.assignments.append([var, var_type + "(12)"])
-            else:
-                self.assignments.append([var, var_type])
+            self.assignments.append([var, var_type])
         
         self.statements.append(f"{var} := {assignment};")
 
