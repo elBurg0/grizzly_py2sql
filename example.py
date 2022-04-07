@@ -23,19 +23,19 @@ def myfunc4(a: int) -> int:
     return m
 
 def myfunc2(a: int) -> str:
-    n: float = 22.3
+    c = "hallo"
+    n = 22.3
+    f: int = 0
     g_df1 = grizzly.read_table("speedtest")
-    g_df1["test_id"]
-    for m in g_df1:
-        print(m)
+    g_df1.generateQuery()
+    for me in g_df1:
+        f = f + a + me.test_id
     
-    i: int = 2
-    f: str = "hello"
-    return a + i
+    return f + n
 
 con = sqlite3.connect("grizzly.db")
-con = cx_Oracle.connect(user='demopython', password='orcl_py123', dsn='127.0.0.1/orclpdb')
-#con = psycopg2.connect(dbname="postgres", user="post_py", password="post_py_DB123")
+#con = cx_Oracle.connect(user='demopython', password='orcl_py123', dsn='127.0.0.1/orclpdb')
+con = psycopg2.connect(dbname="postgres", user="post_py", password="post_py_DB123")
 
 grizzly.use(RelationalExecutor(con, SQLGenerator('postgresql')))
 df = grizzly.read_table("speedtest")
