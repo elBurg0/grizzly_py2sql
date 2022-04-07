@@ -23,8 +23,9 @@ class Python3Visitor(ParseTreeVisitor):
     def evaluate(to_eval):
         _var = ""
         _df = ""
-
+        print(to_eval)
         for line in to_eval:
+            
             if "=" in line:
                 exec(line)
                 _var = line.split("=")[0].replace(" ", "")
@@ -74,7 +75,7 @@ class Python3Visitor(ParseTreeVisitor):
             template = self.templates['cursor']
             self.to_eval.append(ctx.getText())
             _qry, _var = Python3Visitor.evaluate(self.to_eval)
-
+            self.to_eval = []
             if type(_qry) == grizzly.expression.ColRef:
                 _qry = _qry.generateQuery()
 
