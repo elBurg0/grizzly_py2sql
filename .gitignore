@@ -2,12 +2,13 @@
 .venv_mac/*
 config.py
 
+__pycache__/*
 grizzly/__pycache__/*
-grizzly/dataframes/__pycache__/*
+speedtest/__pycache__/*
 py2sqlcompiler/__pycache__/*
+grizzly/dataframes/__pycache__/*
 py2sqlcompiler/py_parser/__pycache__/*
 py2sqlcompiler/py_parser2/__pycache__/*
-__pycache__/*
 py2sqlcompiler/py_parser3/__pycache__/*
-speedtest/__pycache__/*
 py2sqlcompiler/py_parser4/__pycache__/*
+py2sqlcompiler/py_parser5/__pycache__/*
