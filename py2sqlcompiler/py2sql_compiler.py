@@ -1,9 +1,9 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser4.Python3Lexer import Python3Lexer
-from py2sqlcompiler.py_parser4.Python3Parser import Python3Parser
-from py2sqlcompiler.py_parser4.Python3Listener import Python3Listener
-from py2sqlcompiler.py_parser4.Python3Visitor import Python3Visitor
+from py2sqlcompiler.py_parser5.Python3Lexer import Python3Lexer
+from py2sqlcompiler.py_parser5.Python3Parser import Python3Parser
+from py2sqlcompiler.py_parser5.Python3Listener import Python3Listener
+from py2sqlcompiler.py_parser5.Python3Visitor import Python3Visitor
 
 
 def main(argv, templates):
@@ -26,8 +26,17 @@ def main(argv, templates):
 
     # Add statements that should be queried before PL/SQL Block
     pre = "\n".join(line for line in visitor.pre)
-    # Add statements for DECLARE block
-    output = "\n".join((f"    {line[0]} {line[1]};") if type(line) == list else f"    {line};" for line in visitor.assignments)
+    
+    output = ""
+    # Add assignment statements for DECLARE block
+    for var in visitor.assignments:
+            output += (f"    {var} {visitor.assignments[var]};\n")
+
+    # Postgresql: cursor after variable declaration
+    for line in visitor.cursor:
+        # Add Cursor to declare block
+            output += (f"    {line};\n")
+    
     # Add Statements for BEGIN block
     output += "\n" + "\n    ".join(str(line) for line in visitor.statements)
 
