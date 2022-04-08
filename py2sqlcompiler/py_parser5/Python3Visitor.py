@@ -142,13 +142,14 @@ class Python3Visitor(ParseTreeVisitor):
     def visitIf_stmt(self, ctx: Python3Parser.If_stmtContext):
         test_counter = 0
         for i, s in enumerate(ctx.suite()):
+            test= ctx.test()[test_counter].getText().replace('==', '=')
             if i == 0:
-                self.statements.append(f"IF {ctx.test()[test_counter].getText()} THEN")
+                self.statements.append(f"IF {test} THEN")
                 test_counter += 1
             elif i == len(ctx.suite())-1 and "else" in ctx.getText():
                 self.statements.append(f"ELSE")
             elif "elif" in ctx.getText():
-                self.statements.append(f"ELSIF {ctx.test()[test_counter].getText()} THEN")
+                self.statements.append(f"ELSIF {test} THEN")
                 test_counter += 1
 
             self.visitChildren(ctx.suite()[i])
@@ -181,13 +182,21 @@ class Python3Visitor(ParseTreeVisitor):
     def visitSuite(self, ctx: Python3Parser.SuiteContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3Parser#condition.
-    def visitCondition(self, ctx: Python3Parser.TestContext):
+    # Visit a parse tree produced by Python3Parser#test.
+    def visitTest(self, ctx:Python3Parser.TestContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#print_stmt.
     def visitPrint_stmt(self, ctx: Python3Parser.Print_stmtContext):
-        template = self.templates['print']
+        if self.templates.profile == 'postgresql':
+            if ctx.expr().STRING():
+                template = self.templates['print_str']
+            # TODO cases for row.attr references
+            else:
+                template = self.templates['print_var']
+        else:
+            template = self.templates['print']
+        
         if '/' in template:
             self.pre.append(template.split('/')[0])
             self.statements.append(template.split('/')[1].replace('$$code$$', ctx.expr().getText()))
@@ -201,7 +210,7 @@ class Python3Visitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#comprehension.
-    def visitComprehension(self, ctx: Python3Parser.Comp_opContext):
+    def visitComp_op(self, ctx: Python3Parser.Comp_opContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3Parser#expr.
@@ -222,7 +231,19 @@ class Python3Visitor(ParseTreeVisitor):
             if ctx.expr()[0].STRING() or ctx.expr()[1].STRING():
                 return (f"CONCAT({l}, {r})")
 
-        return str(ctx.getText().replace('"', "'"))
+        return str(ctx.getText().replace('"', "'").replace('==', '='))
+
+    # Visit a parse tree produced by Python3Parser#typ.
+    def visitTyp(self, ctx:Python3Parser.TypContext):
+        return self.visitChildren(ctx)
+    
+    # Visit a parse tree produced by Python3Parser#db_reference.
+    def visitDb_reference(self, ctx:Python3Parser.Db_referenceContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by Python3Parser#all_chars.
+    def visitAll_chars(self, ctx:Python3Parser.All_charsContext):
+        return self.visitChildren(ctx)
 
 
 del Python3Parser

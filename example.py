@@ -23,24 +23,34 @@ def myfunc4(a: int) -> int:
     return m
 
 def myfunc2(a: int) -> str:
-    c = "hallo"
-    n = 22.3
-    f: int = 0
+    c = "g_"
+    n = 2.1
+    f = 0
     g_df1 = grizzly.read_table("speedtest")
     g_df1.generateQuery()
-    for me in g_df1:
-        f = f + a + me.test_id
+    for row in g_df1:
+        if row.test_id / 15 == 1: 
+            f = f + a + row.test_id
     
-    return f + n
+    t: float = f + n
+    return c + t
 
-con = sqlite3.connect("grizzly.db")
+# SQLite db
+#con = sqlite3.connect("grizzly.db")
+
+# Oracle pluggable db
 #con = cx_Oracle.connect(user='demopython', password='orcl_py123', dsn='127.0.0.1/orclpdb')
-con = psycopg2.connect(dbname="postgres", user="post_py", password="post_py_DB123")
 
-grizzly.use(RelationalExecutor(con, SQLGenerator('postgresql')))
+# Oracle db
+con = cx_Oracle.connect(user='demopython', password='orcl2_py123', dsn='orcl2')
+
+#Postgresql db
+#con = psycopg2.connect(dbname="postgres", user="post_py", password="post_py_DB123")
+
+
+grizzly.use(RelationalExecutor(con, SQLGenerator('oracle')))
 df = grizzly.read_table("speedtest")
+df = df[["test_id", "test_text", "test_float", "test_number"]]
 df["udf"] = df["test_id"].map(myfunc2)
 print(df.generateQuery())
 df.show(pretty=True)
-
-
