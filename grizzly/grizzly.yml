@@ -11,7 +11,8 @@ postgresql:
   int: INTEGER
   str: VARCHAR
   float: FLOAT8
-  print: raise notice $$code$$;
+  print_str: raise notice '$$code$$';
+  print_var: raise notice '%', $$code$$;
   cursor: $$var$$ CURSOR FOR $$qry$$
   createfunction_py: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / $$code$$$$ LANGUAGE plpython3u;
   createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) / $$indent$$RETURNS $$returntype$$ / AS $$ / DECLARE / $$code$$ / $$ LANGUAGE plpgsql;
