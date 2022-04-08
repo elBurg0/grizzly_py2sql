@@ -15,18 +15,11 @@ import data_prep
 import cx_Oracle
 import psycopg2
 
-def myfunc2(a: int) -> str:
-    n: float = 22.3
-    i: int = 2
-    f: str = "hello"
-    return a + i
-
-
 @timing.timing
-def show_udfs(df, lang):
+def show_udfs(df, lang, func):
     # Prepare df
     df = df[["test_text", "test_float", "test_number"]]
-    df["udf"] = df["test_id"].map(myfunc2, lang)  # apply myfunc
+    df["udf"] = df["test_id"].map(func, lang)  # apply myfunc
 
     # Print generated query
     # print("----------------------------------------")
@@ -38,7 +31,7 @@ def show_udfs(df, lang):
     #print("----------------------------------------")
 
 
-def compare_sql(iteration_index, iterations):
+def compare_sql(iteration_index, iterations, func):
     times = []
 
     for s in config.test_cases:
@@ -48,7 +41,7 @@ def compare_sql(iteration_index, iterations):
             con = psycopg2.connect(dbname=s[2]['dbname'], user=s[2]['user'], password=s[2]['password'], host=s[2]['host'], keepalives=1)
         elif s[2] == config.postgres:
             con = psycopg2.connect(dbname=s[2]['dbname'], user=s[2]['user'], password=s[2]['password'], keepalives=1)
-        elif s[2] == config.oracle:
+        elif s[2] == config.oracle or config.oracle_pdb:
             con = cx_Oracle.connect(user=s[2]['user'], password=s[2]['password'], dsn=s[2]['dsn'])
         
         with con as conn:
@@ -59,7 +52,7 @@ def compare_sql(iteration_index, iterations):
             # create df as table reference
             df = grizzly.read_table("speedtest")
             # execute query and get time for that
-            time = show_udfs(df, s[3])
+            time = show_udfs(df, s[3], func)
             times.append([iterations[iteration_index], s[0], time[1]])
 
     return times
