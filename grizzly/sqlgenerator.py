@@ -458,8 +458,11 @@ class SQLGenerator:
 
   @staticmethod
   def _generateCreateFunc(udf: UDF, templates) -> str:
-    paramsStr = ",".join([f"{p.name} {templates[p.type]}" for p in udf.params])
-    returnType = templates[udf.returnType]
+    # Remove possible brackets in parameters/return (occurs for oracle dbs)
+    import re
+    remove_brackets_expr = "[\(].*?[\)]"
+    paramsStr = ",".join([f'{p.name} {re.sub(remove_brackets_expr, "", templates[p.type])}' for p in udf.params])
+    returnType = re.sub(remove_brackets_expr, "", templates[udf.returnType])
 
     if isinstance(udf, ModelUDF):
       lines = templates[udf.modelType.name + "_code"]
