@@ -1,3 +1,4 @@
+import random
 import config
 
 import psycopg2
@@ -52,8 +53,8 @@ class Data_prep:
         # Prepare Data for insertion
         for i in range(start, end):
             text = f"'{str(i)}. Entry'"
-            rows.append(f"({i}, {text}, {i}, {float(i)})")
-            rows2.append((i, text, i, float(i)))
+            rows.append(f"({i}, {text}, {random.randint(0, 50)}, {random.uniform(0, 50)})")
+            rows2.append((i, text, random.randint(0, 50), random.uniform(0, 50)))
 
         try:
         # Insert into postgresql db
