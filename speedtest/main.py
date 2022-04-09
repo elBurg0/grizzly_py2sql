@@ -4,6 +4,8 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
+import functions
+import plots
 import grizzly
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
@@ -58,4 +60,24 @@ def compare_sql(iteration_index, iterations, func):
     return times
 
 if __name__ == "__main__":
+    func = functions.myfunc2
+    times = []
+    test_iterations2 = [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000, 750000, 1000000, 1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000]
+    test_iterations = []
+
+    for f in range(1, 200):
+        if f % 20 == 0:
+            test_iterations.append(f)
+
+    print(test_iterations)
+
+    try:
+        for i,_ in enumerate(test_iterations):
+            times += compare_sql(i, test_iterations, func)
+            print("\n")
+    except KeyboardInterrupt as e:
+        print(e)
+    
+    plots.plot(func.__name__, times)
+
     compare_sql(0, [10000])
