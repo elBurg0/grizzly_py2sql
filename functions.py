@@ -3,7 +3,6 @@ import grizzly
 def myfunc1(a: int) -> int:
     return a + 3
 
-
 def myfunc2(a: int) -> str:
     i:float = a + 2.31
     return "g_" + i
@@ -42,7 +41,5 @@ def myfunc5(a: int) -> str:
             if row.test_id <= a +2:
                 if row.test_number > 40:
                     f = f + row.test_number
-
-
-    t: float = f + n
+                    
     return f
