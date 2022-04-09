@@ -11,5 +11,8 @@ For compiling the udfs please specify the parameter lang at the .map() function 
 - "sql" for compiling the python udf to PL/SQL or PGPL/SQL
 - "py" for creating a functgion with python code on DB (only working on postgresql db with plpython3u enabled)
 
-For testing the database use the config.py file and add your test configuartions in the format:
+For testing the database use the config_template.py file and add your test configuartions in the format:
 [name of test, name of db (postgres/oracle), connection dictonary, compiler method (sql/py)]
+Rename the file to config.py and then you can run the example.py or the main.py in the speedtest folder.
+
+To change or add UDFs that should be translated go into the funtiony.py file.
