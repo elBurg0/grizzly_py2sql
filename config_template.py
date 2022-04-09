@@ -1,7 +1,7 @@
 oracle = dict(
     user="",
     password="",
-    dsn="localhost/orclpdb"
+    dsn=""
 )
 
 postgres = dict(
@@ -17,6 +17,7 @@ postgres_server = dict(
     host=""
 )
 
+# Format is: display name of testcase, db type, connection dictonary, language to compile to (py only available at postgres db)
 test_cases = [
     ["PL/Python - Online Postgres DB", "postgresql", postgres_server, "py"],
     ["PL/SQL - Online Postgres DB", "postgresql",postgres_server, "sql"],
