@@ -141,15 +141,14 @@ class Python3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3Parser#if_stmt.
     def visitIf_stmt(self, ctx: Python3Parser.If_stmtContext):
         test_counter = 0
-        for i, s in enumerate(ctx.suite()):
-            test= ctx.test()[test_counter].getText().replace('==', '=')
+        for i, _ in enumerate(ctx.suite()):
             if i == 0:
-                self.statements.append(f"IF {test} THEN")
+                self.statements.append(f"IF {ctx.test()[test_counter].getText().replace('==', '=')} THEN")
                 test_counter += 1
             elif i == len(ctx.suite())-1 and "else" in ctx.getText():
                 self.statements.append(f"ELSE")
             elif "elif" in ctx.getText():
-                self.statements.append(f"ELSIF {test} THEN")
+                self.statements.append(f"ELSIF {ctx.test()[test_counter].getText().replace('==', '=')} THEN")
                 test_counter += 1
 
             self.visitChildren(ctx.suite()[i])
@@ -163,7 +162,7 @@ class Python3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3Parser#for_stmt.
     def visitFor_stmt(self, ctx: Python3Parser.For_stmtContext):
         if ctx.rang():
-            self.statements.append("FOR " + str(ctx.expr().NAME()) + " IN " + str(
+            self.statements.append("FOR " + str(ctx.expr()[0].NAME()) + " IN " + str(
                 ctx.rang().expr()[0].getText()) + ".." + str(ctx.rang().expr()[1].getText()))
             self.statements.append("LOOP")
             self.visitSuite(ctx)
