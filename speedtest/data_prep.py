@@ -1,44 +1,40 @@
 import random
-import config
-
-import psycopg2
-import cx_Oracle
-import timing
 
 # class for preparing the data in a given database (upload specific amount of datasets)
 class Data_prep:
-    def __init__(self, con, index, all_iterations):
-        # TODO only add new rows to sql
-        self.iterations = all_iterations[index]
-        self.last_iteration = 0
-
+    def __init__(self, con):
         self.con = con
         self.c = con.cursor()
     
-        
+    # specific method to prepare data for the speedtest (checks whether there is already testdata that can be used)
+    def speedtest_prep(self, index, all_iterations, table_name):
+        number_of_tuples = all_iterations[index]
+
         if index == 0:
-            self.drop_table()
-            self.create_table()
-            self.insert_data(0, self.iterations)
+            self.create_test_table(table_name)
+            self.insert_test_data(table_name, 0, number_of_tuples)
         else:
-            self.c.execute("SELECT COUNT(*) FROM speedtest")
+            self.c.execute(f"SELECT COUNT(*) FROM {table_name}")
             rows = self.c.fetchall()
             # Add none if already in db (mulitple cases on same db)
-            if rows[0][0] == self.iterations:
+            if rows[0][0] == number_of_tuples:
                 return
             # Only add new entries
             else:
-                self.last_iteration = all_iterations[index-1]
-                self.insert_data(self.last_iteration, self.iterations)
+                last_iteration_tupel = all_iterations[index-1]
+                self.insert_test_data(table_name, last_iteration_tupel, number_of_tuples)
 
-    def drop_table(self):
+    # Method to drop a table with a specified name
+    def drop_test_table(self, table_name):
         try:
-            self.c.execute('DROP TABLE speedtest')
+            self.c.execute(f'DROP TABLE {table_name}')
         except Exception as e:
             print("No Table deleted:", e)
 
-    def create_table(self):
-        self.c.execute("""CREATE TABLE speedtest (
+    # Method to create a table with predefined columns (test_id, test_text, test_number, test_float)
+    def create_test_table(self, table_name):
+        self.drop_test_table(table_name)
+        self.c.execute(f"""CREATE TABLE {table_name} (
                 test_id INT,
                 test_text VARCHAR(255), 
                 test_number INT,
@@ -46,7 +42,8 @@ class Data_prep:
             )
         """)
 
-    def insert_data(self, start, end):
+    # Method to insert data in the testtable
+    def insert_test_data(self, table_name, start = 0, end = 200):
         rows = []
         rows2 = []
 
@@ -60,7 +57,7 @@ class Data_prep:
         # Insert into postgresql db
             values = ", ".join(map(str, rows))
             self.c.execute(f"""
-                        INSERT INTO speedtest(
+                        INSERT INTO {table_name}(
                             test_id,
                             test_text,
                             test_number,
@@ -73,7 +70,7 @@ class Data_prep:
         except Exception as e:
             self.c.executemany(
                 f"""
-                        INSERT INTO speedtest(
+                        INSERT INTO {table_name}(
                             test_id,
                             test_text,
                             test_number,
@@ -84,4 +81,4 @@ class Data_prep:
             )
 
         self.con.commit()
-        print(f"-- Inserted {self.iterations - self.last_iteration} rows to DB: {self.con.dsn}")
+        print(f"-- Inserted {end - start} rows to DB: {self.con.dsn}:{table_name}")
