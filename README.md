@@ -13,6 +13,6 @@ For compiling the udfs please specify the parameter lang at the .map() function 
 
 For testing the database use the config_template.py file and add your test configuartions in the format:
 [name of test, name of db (postgres/oracle), connection dictonary, compiler method (sql/py)]
-Rename the file to config.py and then you can run the example.py or the main.py in the speedtest folder.
+Rename the file to config.py and then you can run the example.py or the speedtest.py.
 
 To change or add UDFs that should be translated go into the funtiony.py file.
