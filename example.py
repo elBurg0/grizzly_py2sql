@@ -3,16 +3,16 @@ import grizzly.aggregates
 from grizzly.relationaldbexecutor import RelationalExecutor
 from grizzly.sqlgenerator import SQLGenerator
 
-import functions
+import test_functions
 import config
 
 import psycopg2
 import cx_Oracle
 
 # Connection to test
-conf = config.oracle
+conf = config.postgres
 # Function to compile and execute
-func = functions.myfunc5
+func = test_functions.myfunc5
 
 # Oracle db
 if conf == config.oracle:
@@ -31,6 +31,7 @@ elif conf == config.postgres_server:
 grizzly.use(RelationalExecutor(con, SQLGenerator(db)))
 df = grizzly.read_table("speedtest")
 df = df[["test_id", "test_text", "test_float", "test_number"]]
+
 df["udf"] = df["test_id"].map(func)
 print(df.generateQuery())
 df.show(pretty=True)
