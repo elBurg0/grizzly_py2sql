@@ -12,3 +12,6 @@ py2sqlcompiler/py_parser2/__pycache__/*
 py2sqlcompiler/py_parser3/__pycache__/*
 py2sqlcompiler/py_parser4/__pycache__/*
 py2sqlcompiler/py_parser5/__pycache__/*
+py2sqlcompiler/py_parser_023/__pycache__/*
+py2sqlcompiler/py_parser_024/__pycache__/*
+py2sqlcompiler/py_parser6/__pycache__*
