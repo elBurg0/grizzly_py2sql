@@ -4,7 +4,7 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-import functions
+import test_functions
 import plots
 import grizzly
 from grizzly.relationaldbexecutor import RelationalExecutor
@@ -18,18 +18,18 @@ import cx_Oracle
 import psycopg2
 
 class Speedtester:
-    def __init__(self, iterations, func):
-        self.func = func
+    def __init__(self, iterations):
         self.iterations= iterations
 
     @timing.timing
-    def show_udfs(self, df, lang):
+    def show_udfs(self, df, lang, func):
         # Prepare df
         df = df[["test_text", "test_float", "test_number"]]
-        df["udf"] = df["test_id"].map(self.func, lang)  # apply myfunc
+        df["udf"] = df["test_id"].map(func, lang)  # apply myfunc
 
         # Show table
-        df.show(pretty=True, limit=1)
+        df.show(pretty=True, limit=3)
+        #df.execute_query_without_return()
 
     def compare_test_cases(self, iteration_index, test_cases):
         times = []
@@ -53,23 +53,23 @@ class Speedtester:
                 # create df as table reference
                 df = grizzly.read_table("speedtest")
                 # execute query and get time for that
-                time = self.show_udfs(df, s[3])
+                time = self.show_udfs(df, s[3], s[4])
                 times.append([self.iterations[iteration_index], s[0], time[1]])
 
         return times
 
 if __name__ == "__main__":
     # Parameters for testing (funtion to compile, testcases with connections, iterations to test)
-    func = functions.myfunc2
+    func = test_functions.func4
     test_cases = config.test_cases
     times = []
     test_iterations = []
 
-    for f in range(1, 200):
-        if f % 20 == 0:
+    for f in range(1, 4000):
+        if f % 500 == 0:
             test_iterations.append(f)
 
-    speedtester = Speedtester(test_iterations, func)
+    speedtester = Speedtester(test_iterations)
 
     try:
         for i,_ in enumerate(test_iterations):
