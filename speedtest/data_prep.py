@@ -81,4 +81,4 @@ class Data_prep:
             )
 
         self.con.commit()
-        print(f"-- Inserted {end - start} rows to DB: {self.con.dsn}:{table_name}")
+        #print(f"-- Inserted {end - start} rows to DB: {self.con.dsn}:{table_name}")
