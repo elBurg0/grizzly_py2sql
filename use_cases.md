@@ -223,3 +223,15 @@ print()
 set serveroutput on
 dbms.put_line()
 
+
+
+
+df =            df[df.globaleventid == 467268277]
+df["newcol"] =  df.theyear + df.monthyear
+df =            df.groupby(['classification']).count()
+                                                        df.generateQuery()
+df =            grizzly.read_table("events")
+g =             df.groupby(["year","actor1name"])
+df =            df[["actor1name","actor2name"]]
+                                                        df[df["globaleventid"] == 470747760]
+
