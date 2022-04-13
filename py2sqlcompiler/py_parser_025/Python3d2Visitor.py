@@ -10,15 +10,15 @@ from grizzly import sqlgenerator as SQLGenerator
 from grizzly import relationaldbexecutor as RelationalExecutor
 
 if __name__ is not None and "." in __name__:
-    from .Python3dParser import Python3dParser
+    from .Python3d2Parser import Python3d2Parser
 else:
-    from Python3dParser import Python3dParser
+    from Python3d2Parser import Python3d2Parser
 
 # This class defines a complete generic visitor for a parse tree produced by Python3Parser.
 #statements = []
 
 
-class Python3dVisitor(ParseTreeVisitor):
+class Python3d2Visitor(ParseTreeVisitor):
     @staticmethod
     def evaluate(to_eval):
         _var = ""
@@ -47,48 +47,48 @@ class Python3dVisitor(ParseTreeVisitor):
         self.templates = templates
 
     # Visit a parse tree produced by Python3Parser#single_input.
-    def visitSingle_input(self, ctx: Python3dParser.Single_inputContext):
+    def visitSingle_input(self, ctx: Python3d2Parser.Single_inputContext):
         self.statements.append("BEGIN")
         self.visitChildren(ctx)
         self.statements.append("END;")
 
     # Visit a parse tree produced by Python3Parser#file_input.
-    def visitFile_input(self, ctx: Python3dParser.File_inputContext):
+    def visitFile_input(self, ctx: Python3d2Parser.File_inputContext):
         self.statements.append("BEGIN")
         self.visitChildren(ctx)
         self.statements.append("END;")
 
-    # Visit a parse tree produced by Python3dParser#stmt.
-    def visitStmt(self, ctx: Python3dParser.StmtContext):
+    # Visit a parse tree produced by Python3d2Parser#stmt.
+    def visitStmt(self, ctx: Python3d2Parser.StmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#simple_stmt.
-    def visitSimple_stmt(self, ctx: Python3dParser.Simple_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#simple_stmt.
+    def visitSimple_stmt(self, ctx: Python3d2Parser.Simple_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#small_stmt.
-    def visitSmall_stmt(self, ctx: Python3dParser.Small_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#small_stmt.
+    def visitSmall_stmt(self, ctx: Python3d2Parser.Small_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#assignment_stmt.
-    def visitAssignment_stmt(self, ctx: Python3dParser.Assignment_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#assignment_stmt.
+    def visitAssignment_stmt(self, ctx: Python3d2Parser.Assignment_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#initialization.
-    def visitInitialization(self, ctx:Python3dParser.InitializationContext):
+    # Visit a parse tree produced by Python3d2Parser#initialization.
+    def visitInitialization(self, ctx:Python3d2Parser.InitializationContext):
         self.assignments[ctx.NAME().getText()] = ctx.typ().getText()
         self.statements.append(f"{ctx.NAME().getText()} := {self.visitChildren(ctx)};")
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by Python3dParser#declaration.
-    def visitDeclaration(self, ctx:Python3dParser.DeclarationContext):
+    # Visit a parse tree produced by Python3d2Parser#declaration.
+    def visitDeclaration(self, ctx:Python3d2Parser.DeclarationContext):
         self.assignments[ctx.NAME().getText()] = ctx.typ().getText()
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by Python3dParser#nontype_initialization.
-    def visitNontype_initialization(self, ctx:Python3dParser.Nontype_initializationContext):
+    # Visit a parse tree produced by Python3d2Parser#nontype_initialization.
+    def visitNontype_initialization(self, ctx:Python3d2Parser.Nontype_initializationContext):
         if ctx.GRZLYNAME():
             self.to_eval.append(ctx.getText())
         else:
@@ -113,32 +113,34 @@ class Python3dVisitor(ParseTreeVisitor):
 
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#flow_stmt.
-    def visitFlow_stmt(self, ctx: Python3dParser.Flow_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#flow_stmt.
+    def visitFlow_stmt(self, ctx: Python3d2Parser.Flow_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#break_stmt.
-    def visitBreak_stmt(self, ctx: Python3dParser.Break_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#break_stmt.
+    def visitBreak_stmt(self, ctx: Python3d2Parser.Break_stmtContext):
+        self.statements.append('EXIT;')
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#continue_stmt.
-    def visitContinue_stmt(self, ctx: Python3dParser.Continue_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#continue_stmt.
+    def visitContinue_stmt(self, ctx: Python3d2Parser.Continue_stmtContext):
+        self.statements.append('CONTINUE;')
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#return_stmt.
-    def visitReturn_stmt(self, ctx: Python3dParser.Return_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#return_stmt.
+    def visitReturn_stmt(self, ctx: Python3d2Parser.Return_stmtContext):
         #returns = ctx.expr().getText().replace('"',"'")
         returns = self.visitChildren(ctx)
         self.statements.append(f"RETURN {returns};")
         return f"RETURN {returns};"
         # return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#compound_stmt.
-    def visitCompound_stmt(self, ctx: Python3dParser.Compound_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#compound_stmt.
+    def visitCompound_stmt(self, ctx: Python3d2Parser.Compound_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#if_stmt.
-    def visitIf_stmt(self, ctx: Python3dParser.If_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#if_stmt.
+    def visitIf_stmt(self, ctx: Python3d2Parser.If_stmtContext):
         test_counter = 0
         for i, _ in enumerate(ctx.suite()):
             if i == 0:
@@ -154,12 +156,12 @@ class Python3dVisitor(ParseTreeVisitor):
 
         self.statements.append("END IF;")
 
-    # Visit a parse tree produced by Python3dParser#while_stmt.
-    def visitWhile_stmt(self, ctx: Python3dParser.While_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#while_stmt.
+    def visitWhile_stmt(self, ctx: Python3d2Parser.While_stmtContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#for_stmt.
-    def visitFor_stmt(self, ctx: Python3dParser.For_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#for_stmt.
+    def visitFor_stmt(self, ctx: Python3d2Parser.For_stmtContext):
         if ctx.rang():
             self.statements.append("FOR " + str(ctx.expr()[0].NAME()) + " IN " + str(
                 ctx.rang().expr()[0].getText()) + ".." + str(ctx.rang().expr()[1].getText()))
@@ -170,7 +172,7 @@ class Python3dVisitor(ParseTreeVisitor):
         else:
             if ctx.GRZLYNAME:
                 template = self.templates['cursor']
-                _qry, _var = Python3dVisitor.evaluate(self.to_eval)
+                _qry, _var = Python3d2Visitor.evaluate(self.to_eval)
                 self.to_eval = []
                 if type(_qry) == grizzly.expression.ColRef:
                     _qry = _qry.generateQuery()
@@ -184,16 +186,16 @@ class Python3dVisitor(ParseTreeVisitor):
                 self.statements.append("END LOOP;")
         # return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#suite.
-    def visitSuite(self, ctx: Python3dParser.SuiteContext):
+    # Visit a parse tree produced by Python3d2Parser#suite.
+    def visitSuite(self, ctx: Python3d2Parser.SuiteContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#test.
-    def visitTest(self, ctx:Python3dParser.TestContext):
+    # Visit a parse tree produced by Python3d2Parser#test.
+    def visitTest(self, ctx:Python3d2Parser.TestContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#print_stmt.
-    def visitPrint_stmt(self, ctx: Python3dParser.Print_stmtContext):
+    # Visit a parse tree produced by Python3d2Parser#print_stmt.
+    def visitPrint_stmt(self, ctx: Python3d2Parser.Print_stmtContext):
         if self.templates.profile == 'postgresql':
             if ctx.expr().STRING():
                 template = self.templates['print_str']
@@ -211,16 +213,16 @@ class Python3dVisitor(ParseTreeVisitor):
         
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#range.
-    def visitRange(self, ctx: Python3dParser.RangContext):
+    # Visit a parse tree produced by Python3d2Parser#range.
+    def visitRange(self, ctx: Python3d2Parser.RangContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#comprehension.
-    def visitComp_op(self, ctx: Python3dParser.Comp_opContext):
+    # Visit a parse tree produced by Python3d2Parser#comprehension.
+    def visitComp_op(self, ctx: Python3d2Parser.Comp_opContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#expr.
-    def visitExpr(self, ctx: Python3dParser.ExprContext):
+    # Visit a parse tree produced by Python3d2Parser#expr.
+    def visitExpr(self, ctx: Python3d2Parser.ExprContext):
         if "+" in ctx.getText():
             l = ctx.expr()[0].getText().replace('"', "'")
             r = ctx.expr()[1].getText().replace('"', "'")
@@ -239,17 +241,17 @@ class Python3dVisitor(ParseTreeVisitor):
 
         return str(ctx.getText().replace('"', "'").replace('==', '='))
 
-    # Visit a parse tree produced by Python3dParser#typ.
-    def visitTyp(self, ctx:Python3dParser.TypContext):
+    # Visit a parse tree produced by Python3d2Parser#typ.
+    def visitTyp(self, ctx:Python3d2Parser.TypContext):
         return self.visitChildren(ctx)
     
-    # Visit a parse tree produced by Python3dParser#db_reference.
-    def visitDb_reference(self, ctx:Python3dParser.Db_referenceContext):
+    # Visit a parse tree produced by Python3d2Parser#db_reference.
+    def visitDb_reference(self, ctx:Python3d2Parser.Db_referenceContext):
         return self.visitChildren(ctx)
 
-    # Visit a parse tree produced by Python3dParser#all_chars.
-    def visitAll_chars(self, ctx:Python3dParser.All_charsContext):
+    # Visit a parse tree produced by Python3d2Parser#all_chars.
+    def visitAll_chars(self, ctx:Python3d2Parser.All_charsContext):
         return self.visitChildren(ctx)
 
 
-del Python3dParser
+del Python3d2Parser
