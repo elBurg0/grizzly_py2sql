@@ -1,12 +1,9 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser_024.Python3dLexer import Python3dLexer
-from py2sqlcompiler.py_parser_024.Python3dParser import Python3dParser
-from py2sqlcompiler.py_parser_024.Python3dListener import Python3dListener
-from py2sqlcompiler.py_parser_024.Python3dVisitor import Python3dVisitor
-
-import grizzly
-
+from py2sqlcompiler.py_parser_027.Python3d2Lexer import Python3d2Lexer
+from py2sqlcompiler.py_parser_027.Python3d2Parser import Python3d2Parser
+from py2sqlcompiler.py_parser_027.Python3d2Listener import Python3d2Listener
+from py2sqlcompiler.py_parser_027.Python3d2Visitor import Python3d2Visitor
 
 def main(argv, templates):
     if argv[0] == 0:
@@ -14,16 +11,16 @@ def main(argv, templates):
     else:
         input_stream = InputStream(argv[1])
 
-    lexer = Python3dLexer(input_stream)
+    lexer = Python3d2Lexer(input_stream)
     stream = CommonTokenStream(lexer)
-    parser = Python3dParser(stream)
+    parser = Python3d2Parser(stream)
     tree = parser.file_input()
 
-    listener = Python3dListener()
+    listener = Python3d2Listener()
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
-    visitor = Python3dVisitor(templates)
+    visitor = Python3d2Visitor(templates)
     visitor.visit(tree)
 
     # Add statements that should be queried before PL/SQL Block
@@ -34,7 +31,7 @@ def main(argv, templates):
     for var in visitor.assignments:
             output += (f"    {var} {visitor.assignments[var]};\n")
 
-    # Postgresql: cursor after variable declaration
+    # Cursor after variable declaration
     for line in visitor.cursor:
         # Add Cursor to declare block
             output += (f"    {line};\n")
