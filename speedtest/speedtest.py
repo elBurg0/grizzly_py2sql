@@ -41,6 +41,10 @@ class Speedtester:
                 con = psycopg2.connect(dbname=s[2]['dbname'], user=s[2]['user'], password=s[2]['password'], host=s[2]['host'], keepalives=1)
             elif s[2] == config.postgres:
                 con = psycopg2.connect(dbname=s[2]['dbname'], user=s[2]['user'], password=s[2]['password'], keepalives=1)
+            elif s[2] == config.oracle_uni:
+                dsn = cx_Oracle.makedsn(host=s[2]['host'], port=s[2]['port'], sid=s[2]['sid'])
+                con = cx_Oracle.connect(user=s[2]['user'], password=s[2]['password'], dsn=dsn)
+            
             elif s[2] == config.oracle or config.oracle_pdb:
                 con = cx_Oracle.connect(user=s[2]['user'], password=s[2]['password'], dsn=s[2]['dsn'])
             
@@ -60,12 +64,12 @@ class Speedtester:
 
 if __name__ == "__main__":
     # Parameters for testing (funtion to compile, testcases with connections, iterations to test)
-    func = test_functions.func4
+    func = test_functions.udf3
     test_cases = config.test_cases
     times = []
     test_iterations = []
 
-    for f in range(1, 4000):
+    for f in range(1, 1000):
         if f % 500 == 0:
             test_iterations.append(f)
 
