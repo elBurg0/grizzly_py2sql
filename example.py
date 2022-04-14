@@ -10,9 +10,9 @@ import psycopg2
 import cx_Oracle
 
 # Connection to test
-conf = config.postgres
+conf = config.oracle_uni
 # Function to compile and execute
-func = test_functions.myfunc5
+func = test_functions.udf6
 
 # Oracle db
 if conf == config.oracle:
@@ -23,9 +23,14 @@ elif conf == config.postgres:
     db = 'postgresql'
     con = psycopg2.connect(dbname=conf['dbname'], user=conf['user'], password=conf['password'])
 # Postgres server db
-elif conf == config.postgres_server:
+elif conf == config.postgres_uni:
     db = 'postgresql'
     con = psycopg2.connect(dbname=conf['dbname'], user=conf['user'], password=conf['password'], host=conf['host'])
+
+elif conf == config.oracle_uni:
+    dsn = cx_Oracle.makedsn(host=conf['jost'], port=conf['port'], sid=conf['sid'])
+    db = 'oracle'
+    con = cx_Oracle.connect(user=conf['user'], password=conf['password'], dsn=dsn)
 
 
 grizzly.use(RelationalExecutor(con, SQLGenerator(db)))
