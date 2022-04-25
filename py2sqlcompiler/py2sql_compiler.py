@@ -1,9 +1,9 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser_027.Python3d2Lexer import Python3d2Lexer
-from py2sqlcompiler.py_parser_027.Python3d2Parser import Python3d2Parser
-from py2sqlcompiler.py_parser_027.Python3d2Listener import Python3d2Listener
-from py2sqlcompiler.py_parser_027.Python3d2Visitor import Python3d2Visitor
+from py2sqlcompiler.py_parser_028.Python3d3Lexer import Python3d3Lexer
+from py2sqlcompiler.py_parser_028.Python3d3Parser import Python3d3Parser
+from py2sqlcompiler.py_parser_028.Python3d3Listener import Python3d3Listener
+from py2sqlcompiler.py_parser_028.Python3d3Visitor import Python3d3Visitor
 
 def main(argv, templates):
     if argv[0] == 0:
@@ -11,35 +11,36 @@ def main(argv, templates):
     else:
         input_stream = InputStream(argv[1])
 
-    lexer = Python3d2Lexer(input_stream)
+    lexer = Python3d3Lexer(input_stream)
     stream = CommonTokenStream(lexer)
-    parser = Python3d2Parser(stream)
+    parser = Python3d3Parser(stream)
     tree = parser.file_input()
 
-    listener = Python3d2Listener()
+    listener = Python3d3Listener()
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
-    visitor = Python3d2Visitor(templates)
+    visitor = Python3d3Visitor(templates)
     visitor.visit(tree)
 
     # Add statements that should be queried before PL/SQL Block
     pre = "\n".join(line for line in visitor.pre)
     
-    output = ""
+    sql_function = ""
+    # TODO use better iteration
     # Add assignment statements for DECLARE block
     for var in visitor.assignments:
-            output += (f"    {var} {visitor.assignments[var]};\n")
+            sql_function += (f"    {var} {visitor.assignments[var]};\n")
 
     # Cursor after variable declaration
     for line in visitor.cursor:
         # Add Cursor to declare block
-            output += (f"    {line};\n")
+            sql_function += (f"    {line};\n")
     
     # Add Statements for BEGIN block
-    output += "\n" + "\n    ".join(str(line) for line in visitor.statements)
+    sql_function += "\n    ".join(str(line) for line in visitor.statements)
 
-    return pre, output
+    return pre, sql_function
 
 
 if __name__ == '__main__':

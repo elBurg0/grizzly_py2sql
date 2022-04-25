@@ -636,7 +636,7 @@ class DataFrame(object):
   def generateQuery(self):
     (pre,qry) = self.generate()
     prequeries = "" if not pre else ";".join(pre)
-    return f"{prequeries} {qry}"
+    return f"{prequeries}\n{qry}"
 
   def show(self, pretty=False, delim=",", maxColWidth=20, limit=20):
     print(GrizzlyGenerator.toString(self,delim,pretty,maxColWidth,limit))
