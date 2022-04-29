@@ -470,16 +470,26 @@ class SQLGenerator:
         lines = lines.replace(key, str(value))
 
     else:
+      pre = ""
       lines = udf.lines[1:]
       lines = SQLGenerator._unindent(lines)
       lines = "".join(lines)
       template = templates[f"createfunction_{udf.lang}"]
 
       if udf.lang == "sql":
-        pre, lines = py2sql_compiler.main([1, lines], templates)
-      else:
-        pre = ""
-    
+        try:
+          pre, lines = py2sql_compiler.main([1, lines], templates)
+        except Exception as e:
+          logging.info(f'Compiling to "{udf.lang}" failed:' + str(e))
+          # If compiling fails, try fallbackmode with PL/PY translation
+          try:
+            template = templates["createfunction_py"]
+            logging.info('Fallback to python translation')
+          except ValueError:
+            logging.error('Fallback to PL/Python failed')
+            raise e
+            #raise CompileError(f'Compiling of "{udf.name}" to "{udf.lang}" failed, no Fallback to PL/Python possible')
+
     code = template.replace("$$name$$", udf.name)\
       .replace("$$pre$$", pre)\
       .replace("$$indent$$","    ")\
