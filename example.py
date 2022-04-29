@@ -10,9 +10,9 @@ import psycopg2
 import cx_Oracle
 
 # Connection to test
-conf = config.oracle_uni
+conf = config.postgres
 # Function to compile and execute
-func = test_functions.udf6
+func = test_functions.udf10
 
 # Oracle db
 if conf == config.oracle:
@@ -23,12 +23,12 @@ elif conf == config.postgres:
     db = 'postgresql'
     con = psycopg2.connect(dbname=conf['dbname'], user=conf['user'], password=conf['password'])
 # Postgres server db
-elif conf == config.postgres_uni:
+elif conf == config.postgres_uni or conf == config.postgres_pi:
     db = 'postgresql'
     con = psycopg2.connect(dbname=conf['dbname'], user=conf['user'], password=conf['password'], host=conf['host'])
 
 elif conf == config.oracle_uni:
-    dsn = cx_Oracle.makedsn(host=conf['jost'], port=conf['port'], sid=conf['sid'])
+    dsn = cx_Oracle.makedsn(host=conf['host'], port=conf['port'], sid=conf['sid'])
     db = 'oracle'
     con = cx_Oracle.connect(user=conf['user'], password=conf['password'], dsn=dsn)
 
@@ -37,6 +37,6 @@ grizzly.use(RelationalExecutor(con, SQLGenerator(db)))
 df = grizzly.read_table("speedtest")
 df = df[["test_id", "test_text", "test_float", "test_number"]]
 
-df["udf"] = df["test_id"].map(func)
+df["udf"] = df["test_id, test_float"].map(func)
 print(df.generateQuery())
 df.show(pretty=True)
