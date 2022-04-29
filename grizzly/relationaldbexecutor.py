@@ -27,6 +27,7 @@ class RelationalExecutor(object):
       cursor.execute(sql)
       return cursor  
     except Exception as e:
+      logging.basicConfig(level=logging.ERROR)
       logger.error(f"Failed to execute query. Reason: {e}")
       logger.error(f"Query: {sql}")
       logger.exception(e)
