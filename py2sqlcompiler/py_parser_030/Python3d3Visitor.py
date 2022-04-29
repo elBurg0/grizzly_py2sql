@@ -41,6 +41,7 @@ class Python3d3Visitor(ParseTreeVisitor):
         self.statements = []
         self.assignments = {}
         self.cursor = []
+        self.exceptions = []
         self.to_eval = []
         self.templates = templates
 
@@ -62,16 +63,27 @@ class Python3d3Visitor(ParseTreeVisitor):
     
     # Visit a parse tree produced by Python3d3Parser#exception_stmt.
     def visitException_stmt(self, ctx:Python3d3Parser.Exception_stmtContext):
+        # TODO Handle else, finally
         self.statements.append('BEGIN')
         self.visitChildren(ctx.suite()[0])
         self.statements.append('EXCEPTION')
+
+        # Iterate through each exception handling
         for i, exception_stmt in enumerate(ctx.except_stmt()):
             if exception_stmt.expr():
                 if type(exception_stmt.expr()) == list:
-                    # TODO no use of exceptions (as e) in sql
-                    self.statements.append('WHEN ' + exception_stmt.expr()[0].getText() + ' THEN')
+                    exception_text = exception_stmt.expr()[0].getText()
                 else:
-                    self.statements.append('WHEN ' + exception_stmt.expr().getText() + ' THEN')
+                    exception_text = exception_stmt.expr().getText()
+
+                # Try to map error type
+                try:
+                    exception_text = self.templates[exception_text]
+                except ValueError:
+                    pass
+                
+                # TODO no use of exceptions (as e) in sql
+                self.statements.append('WHEN ' + exception_text + ' THEN')
             else:
                 self.statements.append('WHEN OTHERS THEN')
             self.visitChildren(ctx.suite()[i+1])
@@ -91,6 +103,7 @@ class Python3d3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3d3Parser#initialization.
     def visitInitialization(self, ctx:Python3d3Parser.InitializationContext):
+        # i: int = 0
         # TODO Errorhandling
         self.assignments[ctx.NAME().getText()] = self.templates[ctx.typ().getText()]
         self.statements.append(f"{ctx.NAME().getText()} := {self.visitChildren(ctx)};")
@@ -99,6 +112,7 @@ class Python3d3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3d3Parser#declaration.
     def visitDeclaration(self, ctx:Python3d3Parser.DeclarationContext):
+        # i: int
         # TODO Errorhandling
         self.assignments[ctx.NAME().getText()] = self.templates[ctx.typ().getText()]
         return self.visitChildren(ctx)
@@ -106,6 +120,7 @@ class Python3d3Visitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by Python3d3Parser#nontype_initialization.
     def visitNontype_initialization(self, ctx:Python3d3Parser.Nontype_initializationContext):
+        # i = 3 / g_df1 = grizzly.read('table')
         if ctx.GRZLYNAME():
             self.to_eval.append(ctx.getText())
             return self.visitChildren(ctx)
@@ -121,15 +136,15 @@ class Python3d3Visitor(ParseTreeVisitor):
                 var_type = self.templates['str']
             # If expression is a number check whether its a float or not
             elif ctx.expr().NUMBER():
-                if '.' in assignment:
-                    var_type = self.templates['float']
-                else:
-                    var_type = self.templates['int']
+                var_type = self.templates['int']
+            elif ctx.expr().FLOAT():
+                var_type = self.templates['float']
             else:
+                raise NotImplementedError(f'Type mapping for expression "{assignment}" not implemented')
                 var_type = '<UNDEFINED>'
             self.assignments[var] = var_type
+        
         self.statements.append(f"{var} := {assignment};")
-        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by Python3d3Parser#flow_stmt.
     def visitFlow_stmt(self, ctx: Python3d3Parser.Flow_stmtContext):
@@ -152,6 +167,14 @@ class Python3d3Visitor(ParseTreeVisitor):
         self.statements.append(f"RETURN {returns};")
         return f"RETURN {returns};"
         # return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by Python3d3Parser#raise_stmt.
+    def visitRaise_stmt(self, ctx:Python3d3Parser.Raise_stmtContext):
+        if self.templates.profile == 'oracle':
+            self.exceptions.append(f'{ctx.NAME()} EXCEPTION;')
+            self.statements.append(f'RAISE {ctx.NAME()};')
+
+        return self.visitChildren(ctx)
     
     # Visit a parse tree produced by Python3d3Parser#try_stmt.
     def visitTry_stmt(self, ctx:Python3d3Parser.Try_stmtContext):
@@ -286,10 +309,5 @@ class Python3d3Visitor(ParseTreeVisitor):
     # Visit a parse tree produced by Python3d3Parser#db_reference.
     def visitDb_reference(self, ctx:Python3d3Parser.Db_referenceContext):
         return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by Python3d3Parser#all_chars.
-    def visitAll_chars(self, ctx:Python3d3Parser.All_charsContext):
-        return self.visitChildren(ctx)
-
 
 del Python3d3Parser

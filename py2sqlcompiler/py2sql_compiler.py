@@ -1,9 +1,9 @@
 import pathlib
 from antlr4 import *
-from py2sqlcompiler.py_parser_028.Python3d3Lexer import Python3d3Lexer
-from py2sqlcompiler.py_parser_028.Python3d3Parser import Python3d3Parser
-from py2sqlcompiler.py_parser_028.Python3d3Listener import Python3d3Listener
-from py2sqlcompiler.py_parser_028.Python3d3Visitor import Python3d3Visitor
+from py2sqlcompiler.py_parser_030.Python3d3Lexer import Python3d3Lexer
+from py2sqlcompiler.py_parser_030.Python3d3Parser import Python3d3Parser
+from py2sqlcompiler.py_parser_030.Python3d3Listener import Python3d3Listener
+from py2sqlcompiler.py_parser_030.Python3d3Visitor import Python3d3Visitor
 
 def main(argv, templates):
     if argv[0] == 0:
@@ -16,9 +16,9 @@ def main(argv, templates):
     parser = Python3d3Parser(stream)
     tree = parser.file_input()
 
-    listener = Python3d3Listener()
-    walker = ParseTreeWalker()
-    walker.walk(listener, tree)
+    #listener = Python3d3Listener()
+    #walker = ParseTreeWalker()
+    #walker.walk(listener, tree)
 
     visitor = Python3d3Visitor(templates)
     visitor.visit(tree)
@@ -27,6 +27,10 @@ def main(argv, templates):
     pre = "\n".join(line for line in visitor.pre)
     
     sql_function = ""
+
+    for exception in visitor.exceptions:
+        sql_function += (f"    {exception}\n")
+
     # TODO use better iteration
     # Add assignment statements for DECLARE block
     for var in visitor.assignments:
